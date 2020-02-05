@@ -86,7 +86,27 @@
                             `;
                         }
                     }
-                ]
+                ],
+                initComplete :  function() {
+                    $('.dataTables_filter').html(`<div class="input-group mb-3">
+                                                    <input type="text" class="form-control" placeholder="Search something" aria-label="Search something" aria-describedby="basic-addon2">
+                                                    <div class="input-group-append">
+                                                    </div>
+                                                </div>`);
+                    const input = $('.dataTables_filter input').unbind();
+                    self = this.api();
+                    $searchButton = $('<button class="btn btn-primary btn-outline" type="button" id="datables-btn-search">')
+                            .text('Search')
+                            .click(function() {
+                                    $('#datables-btn-search').attr("disabled", true);
+                                    self.search(input.val()).draw();
+                            })
+                    $('.dataTables_filter .input-group-append').append($searchButton);
+                },
+                infoCallback : function( settings, start, end, max, total, pre ) {
+                    $('#datables-btn-search').attr("disabled", false);
+                    return `Showing ${start} to ${end} of ${total} entries`
+                },
             });
         });
     
