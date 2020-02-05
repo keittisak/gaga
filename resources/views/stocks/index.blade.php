@@ -1,7 +1,11 @@
 @extends('layouts.main')
 @section('title','Stocks')
 @section('css')
-    {{--  Css  --}}
+<style>
+    .page{
+        display:block;
+    }
+</style>
 @endsection
 @section('content')
 <div class="row row-cards row-deck">
