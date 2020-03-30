@@ -10,7 +10,7 @@
     </h1>
 </div>
 <div class="row">
-    <div class="col-12 pb-5 d-none d-md-block prompt-front">
+    <div class="col-10 pb-5 d-none d-md-block prompt-front">
         <a href="#" class="btn btn-secondary btn-lg  pr-0 pl-0" style="width: 72px">
             <div class="h5 m-0 ">21</div>
             <small class="mb-1 " style="font-size:80%">ทั้งหมด</small>
@@ -41,10 +41,9 @@
                 <small class="mb-1 ">ส่งแล้ว</small>
             </a>
         </div>
-        <a href="#?scope=voided" class="btn btn-secondary btn-lg  pr-0 pl-0 " style="width: 72px">
-            <div class="h5 m-0 ">0</div>
-                <small class="mb-1 ">ยกเลิก</small>
-        </a>
+    </div>
+    <div class="col-2 pb-5 d-none d-md-block text-right">
+    <a href="{{route('orders.create')}}" class="btn btn-primary">สร้างคำสั่งซื้อ</a>
     </div>
 </div>
 <div class="row d-none d-md-flex prompt-front">
@@ -61,7 +60,7 @@
             </span>
         </div>
     </div>
-    <div class="col-12 col-md-12 col-lg-4 text-right mb-5 prompt-front">
+    <div class="col-12 col-md-12 col-lg-4 text-right mb-5 pr-0 prompt-front">
         <div class="dropdown">
             <button data-toggle="dropdown" type="button" class="btn btn-primary dropdown-toggle" aria-expanded="true">เปลี่ยนสถานะ (1)</button>
             <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" x-placement="bottom-end" style="position: absolute; transform: translate3d(-56px, 32px, 0px); top: 0px; left: 0px; will-change: transform;">
