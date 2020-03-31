@@ -30,6 +30,10 @@
     <script src="{{ asset('assets/plugins/input-mask/plugin.js') }}"></script>
     <!-- Datatables Plugin -->
     <script src="{{ asset('assets/plugins/datatables/plugin.js') }}"></script>
+    <script src="{{ asset('assets/plugins/jqueryForm/plugin.js') }}"></script>
+
+    {{-- <link rel="stylesheet" href="{{ asset('assets/plugins/sweet-alert2/sweet-alert2.min.css') }}">
+    <script src="{{ asset('assets/plugins/sweet-alert2/sweet-alert2.min.js') }}"></script> --}}
     @yield('css')
 </head>
 <body>

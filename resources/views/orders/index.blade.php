@@ -225,7 +225,7 @@
 @endsection
 @section('js')
 <script>
-    require(['datatables', 'jquery'], function(datatable, $) {
+    require(['jquery', 'datatables'], function($, datatable) {
             $('.datatable').DataTable({
                 paging:false,
                 searching:false,

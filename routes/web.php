@@ -26,15 +26,16 @@ Route::get('orders/create', function () {
     return view('orders.form');
 })->name('orders.create');
 
-Route::get('/products', function(){
-    return view('products.index');
-})->name('products.index');
-Route::get('/products/create', function(){
-    return view('products.form');
-})->name('products.create');
-Route::get('/products/stocks', function(){
-    return view('products.stock');
-})->name('products.stock');
+
+//Product
+Route::get('/products', 'ProductController@index')->name('products.index');
+Route::get('/products', 'ProductController@data')->name('products.data');
+Route::get('/products/create', 'ProductController@create')->name('products.index');
+Route::post('/products', 'ProductController@store')->name('products.store');
+Route::get('/products/{id}', 'ProductController@show')->name('products.show');
+Route::get('/products/{id}/edit', 'ProductController@edit')->name('products.edit');
+Route::put('/products/{id}/edit', 'ProductController@update')->name('products.update');
+Route::delete('/products/{id}', 'ProductController@destroy')->name('products.delete');
 
 
 Route::get('/stocks', 'StockController@index');
