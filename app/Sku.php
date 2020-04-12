@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Sku extends Model
 {
+    protected $primaryKey = 'sku';
+
+    protected $dates = ['created_at', 'updated_at'];
+
+    public $incrementing = false;
+    
     protected $fillable = [
         'sku', 'name', 'name_en', 'shortname', 'product_id', 'barcode', 'image', 'call_unit', 'full_price', 'price', 'cost', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at' 
     ];

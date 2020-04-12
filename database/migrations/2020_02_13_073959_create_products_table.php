@@ -17,7 +17,7 @@ class CreateProductsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('name_en')->nullable();
-            $table->string('slug')->unique();
+            // $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->text('short_description')->nullable();
             $table->text('description_en')->nullable();
