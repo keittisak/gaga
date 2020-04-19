@@ -20,9 +20,11 @@ class CreateOrderDetailsTable extends Migration
             $table->string('product_name')->nullable();
             $table->string('sku', 30);
             $table->string('name')->nullable();
-            $table->text('image')->nullable();
-            $table->double('cost',10,4)->default(0);
-            $table->double('price', 10, 4)->default(0);
+            $table->string('full_name')->nullable();
+            $table->string('call_unit')->nullable();
+            $table->double('full_price',10,4)->nullable();
+            $table->double('price',10,4)->nullable();
+            $table->double('cost',10,4)->nullable();
             $table->integer('quantity')->default(0);
             $table->double('discount_amount', 10, 4)->default(0);
             $table->double('total_amount',10,4)->default(0);

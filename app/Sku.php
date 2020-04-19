@@ -13,7 +13,7 @@ class Sku extends Model
     public $incrementing = false;
     
     protected $fillable = [
-        'sku', 'name', 'name_en', 'shortname', 'product_id', 'barcode', 'image', 'call_unit', 'full_price', 'price', 'cost', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at' 
+        'sku', 'name', 'name_en', 'full_name', 'shortname', 'product_id', 'barcode', 'image', 'call_unit', 'full_price', 'price', 'cost', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at' 
     ];
 
     public function options()

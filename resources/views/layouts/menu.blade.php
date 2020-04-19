@@ -21,7 +21,7 @@
               <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-file"></i> จัดการสินค้า</a>
               <div class="dropdown-menu dropdown-menu-arrow">
                 <a href="{{ route('products.index') }}" class="dropdown-item ">สินค้า</a>
-                <a href="#" class="dropdown-item ">คลังสินค้า</a>
+                <a href="{{ route('stocks.index') }}" class="dropdown-item ">คลังสินค้า</a>
               </div>
             </li>
             <li class="nav-item dropdown">

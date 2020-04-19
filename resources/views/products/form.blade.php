@@ -1,12 +1,12 @@
 @extends('layouts.main')
-@section('title','Product Create')
+@section('title',$title_en)
 @section('css')
     {{--  Css  --}}
 @endsection
 @section('content')
 <div class="page-header">
     <h1 class="page-title prompt-front">
-        เพิ่มสินค้า
+        {{$title_th}}
     </h1>
 </div>
 <div class="row">
@@ -70,7 +70,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6 offset-md-3 offset-4 col-8">
-                                    <button type="button" class="btn btn-outline-info btn-block btn-add-product-variable-optoin" data-variable="1">เพิ่มตัวเลือก</button>
+                                    <button type="button" class="btn btn-outline-info btn-block btn-add-product-variable-optoin" data-variable="1"><i class="fas fa-plus"></i> เพิ่มตัวเลือก</button>
                                 </div>
                             </div>
                         </fieldset>
@@ -102,7 +102,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6 offset-md-3 offset-4 col-8">
-                                    <button type="button" class="btn btn-outline-info btn-block btn-add-product-variable-optoin" data-variable="2">เพิ่มตัวเลือก</button>
+                                    <button type="button" class="btn btn-outline-info btn-block btn-add-product-variable-optoin" data-variable="2"><i class="fas fa-plus"></i> เพิ่มตัวเลือก</button>
                                 </div>
                             </div>
                         </fieldset>

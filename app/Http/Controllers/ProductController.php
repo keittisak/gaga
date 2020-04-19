@@ -8,6 +8,7 @@ use App\Variant;
 use App\Sku;
 use DB;
 use App\Libraries\Counter;
+use DataTables;
 
 class ProductController extends Controller
 {
@@ -18,12 +19,26 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('products.index');
+        $data = [
+            'title_en' => 'Products',
+            'title_th' => 'สินค้า',
+        ];
+        return view('products.index',$data);
     }
 
-    public function data(Reqeust $request)
+    public function data(Request $request)
     {
-        
+        $products = Product::with(['skus'])->get();
+        return DataTables::of($products)
+            ->addColumn('price',function($product){
+                return $product->skus[0]->price;
+            })
+            ->addColumn('action', function($product) {
+                return '<a href="'.route('products.edit', $product->id).'" class="btn btn-link btn-sm"><i class="far fa-edit"></i></a>
+                        <button type="button" class="btn btn-link btn-sm btnDelete" data-id="'.$product->id.'"><i class="far fa-trash-alt"></i></button>';
+            })
+            ->rawColumns(['checkbox','action'])
+        ->make(true);
     }
 
     /**
@@ -35,7 +50,8 @@ class ProductController extends Controller
     {
         $data = [
             'action' => 'create',
-            'title' => 'เพิ่มสินค้า',
+            'title_en' => 'Add Product',
+            'title_th' => 'เพิ่มสินค้า',
             'product' => new Product
         ];
         return view('products.form',$data);
@@ -132,7 +148,7 @@ class ProductController extends Controller
                         $sku = $counter->generateCode('sku',0,3);
                         $data['sku'] = $sku;
                         $data['product_id'] = $product->id;
-
+                        $data['full_name'] = $product->name.' ('.$data['name'].')';
                         $_request->merge($data);
                         if (isset($request->user()->id)){
                             $_request->merge(['created_by' => $request->user()->id, 'updated_by' => $request->user()->id]);
@@ -190,6 +206,7 @@ class ProductController extends Controller
                 $sku = $counter->generateCode('sku',0,3);
                 $data['sku'] = $sku;
                 $data['product_id'] = $product->id;
+                $data['full_name'] = $product->name.' ('.$data['name'].')';
                 $data['price'] = $request->price;
                 $data['full_price'] = $request->full_price;
                 $data['cost'] = $request->cost;
@@ -210,7 +227,7 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        //
+        $product = Product::findOrFail($id);
     }
 
     /**
@@ -225,7 +242,8 @@ class ProductController extends Controller
         $variants = $product->variants()->with('options')->get();
         $data = [
             'action' => 'update',
-            'title' => 'แก้ไขสินค้า',
+            'title_en' => 'Update Product',
+            'title_th' => 'แก้ไขสินค้า',
             'product' => $product,
             'variants' => $variants
         ];
@@ -323,6 +341,7 @@ class ProductController extends Controller
                     $_request = new Request();
                     if(isset($data['active'])){
                         $data['product_id'] = $product->id;
+                        $data['full_name'] = $product->name.' ('.$data['name'].')';
                         if(empty($data['sku'])){
                             if (isset($request->user()->id)){
                                 $_request->merge(['created_by' => $request->user()->id, 'updated_by' => $request->user()->id]);
@@ -351,6 +370,7 @@ class ProductController extends Controller
             }else if($request->type == 'simple'){
                 $_request = new Request();
                 $data['product_id'] = $product->id;
+                $data['full_name'] = $product->name.' ('.$data['name'].')';
                 $data['price'] = $request->price;
                 $data['full_price'] = $request->full_price;
                 $data['cost'] = $request->cost;
@@ -376,6 +396,16 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $product = Product::findOrFail($id);
+        DB::transaction(function() use($product) {
+            $skus = $product->skus()->get();
+            foreach($skus as $item)
+            {
+                (new SkuController)->destroy($item->sku);
+            }
+            $product->delete();
+            
+        });
+        return response('','204');
     }
 }

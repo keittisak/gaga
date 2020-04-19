@@ -26,6 +26,9 @@ class SkuController extends Controller
             'name' => [
                 'nullable'
             ],
+            'full_name' => [
+                'nullable'
+            ],
             'product_id' => [
                 'required',
                 'integer',
@@ -74,9 +77,8 @@ class SkuController extends Controller
         $sku = DB::transaction(function() use($request, $data) {
             $sku = new Sku();
             $sku = $sku->create($data);
-            // if (isset($request->option_ids)){
-            //     $sku->options()->sync($request->option_ids);
-            // }
+            $_request = new Request();
+            (new StockController)->store($_request, $sku->sku);
             return $sku;
         });
 
@@ -97,6 +99,9 @@ class SkuController extends Controller
             //     'max:30'
             // ],
             'name' => [
+                'nullable'
+            ],
+            'full_name' => [
                 'nullable'
             ],
             'product_id' => [
@@ -159,7 +164,7 @@ class SkuController extends Controller
     {
         $sku = Sku::findOrFail($id);
         DB::transaction(function() use($sku) {
-            // $sku->stock()->delete();
+            $sku->stock()->delete();
             $sku->delete();
         });
         

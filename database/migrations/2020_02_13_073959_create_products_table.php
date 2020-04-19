@@ -53,34 +53,34 @@ class CreateProductsTable extends Migration
             $table->primary('sku');
         });
 
-        Schema::create('variants', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('product_id')->unsigned();
-            $table->string('name');
-            $table->string('name_en');
-            $table->integer('created_by')->unsigned()->nullable();
-            $table->integer('updated_by')->unsigned()->nullable();
-            $table->timestamps();
-        });
+        // Schema::create('variants', function (Blueprint $table) {
+        //     $table->increments('id');
+        //     $table->integer('product_id')->unsigned();
+        //     $table->string('name');
+        //     $table->string('name_en');
+        //     $table->integer('created_by')->unsigned()->nullable();
+        //     $table->integer('updated_by')->unsigned()->nullable();
+        //     $table->timestamps();
+        // });
 
-        Schema::create('options', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('variant_id')->unsigned();;
-            $table->string('name');
-            $table->string('name_en');
-            $table->integer('created_by')->unsigned()->nullable();
-            $table->integer('updated_by')->unsigned()->nullable();
-            $table->timestamps();
-        });
+        // Schema::create('options', function (Blueprint $table) {
+        //     $table->increments('id');
+        //     $table->integer('variant_id')->unsigned();;
+        //     $table->string('name');
+        //     $table->string('name_en');
+        //     $table->integer('created_by')->unsigned()->nullable();
+        //     $table->integer('updated_by')->unsigned()->nullable();
+        //     $table->timestamps();
+        // });
 
-        Schema::create('option_sku', function (Blueprint $table) {
-            $table->string('sku', 30);
-            $table->integer('option_id')->unsigned();
-            $table->primary(['sku', 'option_id']);
-            $table->integer('created_by')->unsigned()->nullable();
-            $table->integer('updated_by')->unsigned()->nullable();
-            $table->timestamps();
-        });
+        // Schema::create('option_sku', function (Blueprint $table) {
+        //     $table->string('sku', 30);
+        //     $table->integer('option_id')->unsigned();
+        //     $table->primary(['sku', 'option_id']);
+        //     $table->integer('created_by')->unsigned()->nullable();
+        //     $table->integer('updated_by')->unsigned()->nullable();
+        //     $table->timestamps();
+        // });
     }
 
     /**
@@ -92,8 +92,8 @@ class CreateProductsTable extends Migration
     {
         Schema::dropIfExists('products');
         Schema::dropIfExists('skus');
-        Schema::dropIfExists('variants');
-        Schema::dropIfExists('options');
-        Schema::dropIfExists('option_sku');
+        // Schema::dropIfExists('variants');
+        // Schema::dropIfExists('options');
+        // Schema::dropIfExists('option_sku');
     }
 }

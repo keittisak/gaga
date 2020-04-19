@@ -50,5 +50,13 @@
         {{-- @include('layouts.footer') --}}
     </div>
 </body>
+<script>
+    require(['input-mask']);
+    require(['jquery'], function($) {
+        function pricceFormat(text) {
+            return text.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        }
+    });
+</script>
 @yield('js')
 </html>
