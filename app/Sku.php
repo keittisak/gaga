@@ -6,14 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Sku extends Model
 {
-    protected $primaryKey = 'sku';
-
     protected $dates = ['created_at', 'updated_at'];
-
-    public $incrementing = false;
     
     protected $fillable = [
-        'sku', 'name', 'name_en', 'full_name', 'shortname', 'product_id', 'barcode', 'image', 'call_unit', 'full_price', 'price', 'cost', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at' 
+        'id', 'name', 'name_en', 'full_name', 'shortname', 'product_id', 'barcode', 'image', 'call_unit', 'full_price', 'price', 'cost', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at' 
     ];
 
     public function options()
@@ -28,7 +24,7 @@ class Sku extends Model
 
     public function stock()
     {
-        return $this->hasOne('App\Stock', 'sku');
+        return $this->hasOne('App\Stock');
     }
 
     public function created_by_user()

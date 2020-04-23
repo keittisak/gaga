@@ -18,11 +18,11 @@ class SkuController extends Controller
             $request->merge(array('updated_by' => $request->user()->id));
         }
         $validate = [
-            'sku' => [
-                'required',
-                'unique:skus,sku',
-                'max:30'
-            ],
+            // 'sku' => [
+            //     'required',
+            //     'unique:skus,sku',
+            //     'max:30'
+            // ],
             'name' => [
                 'nullable'
             ],
@@ -78,7 +78,13 @@ class SkuController extends Controller
             $sku = new Sku();
             $sku = $sku->create($data);
             $_request = new Request();
-            (new StockController)->store($_request, $sku->sku);
+            $data = [
+                'available' => 0,
+                'draft' => 0,
+                'onhand' => 0
+            ];
+            $_request->merge($data);
+            (new StockController)->store($_request, $sku->id);
             return $sku;
         });
 

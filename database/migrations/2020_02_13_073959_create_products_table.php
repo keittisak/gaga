@@ -31,15 +31,15 @@ class CreateProductsTable extends Migration
             $table->integer('created_by')->unsigned()->nullable();
             $table->integer('updated_by')->unsigned()->nullable();
             $table->timestamps();
-            $table->index('slug');
+            // $table->index('slug');
         });
 
         Schema::create('skus', function (Blueprint $table) {
-            $table->string('sku', 30);
+            $table->increments('id');
             $table->string('name')->nullable();
             $table->string('name_en')->nullable();
             $table->string('shortname')->nullable();
-            $table->integer('product_id')->unsigned()->nullable();
+            $table->integer('product_id')->unsigned();
             $table->string('barcode', 13)->nullable();
             $table->text('image')->nullable();
             $table->string('call_unit')->nullable();
@@ -50,7 +50,7 @@ class CreateProductsTable extends Migration
             $table->integer('created_by')->unsigned()->nullable();
             $table->integer('updated_by')->unsigned()->nullable();
             $table->timestamps();
-            $table->primary('sku');
+            // $table->primary('sku');
         });
 
         // Schema::create('variants', function (Blueprint $table) {

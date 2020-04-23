@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Product extends Model
 {
     protected $fillable = [
-        'id', 'name', 'name_en', 'slug', 'description', 'short_description', 'description_en', 'short_description_en', 'brand_id', 'image', 'gallery_id','type', 'status', 'tags', 'created_by', 'updated_by', 'created_at', 'updated_at'
+        'id', 'name', 'name_en', 'description', 'short_description', 'description_en', 'short_description_en', 'brand_id', 'image', 'gallery_id','type', 'status', 'tags', 'created_by', 'updated_by', 'created_at', 'updated_at'
     ];
 
     public function skus()

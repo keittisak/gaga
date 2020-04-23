@@ -30,7 +30,7 @@ class StockController extends Controller
         {
             foreach($item['skus'] as $index => $sku)
             {
-                $stock = Stock::where('sku', $sku['sku'])->first()->toArray();
+                $stock = Stock::where('sku_id', $sku['id'])->first()->toArray();
                 $products[$key]['skus'][$index]['stock'] = $stock;
             }
             $data->push($products[$key]);
@@ -40,16 +40,16 @@ class StockController extends Controller
         return DataTables::of($data)->make(true);
     }
 
-    public function store(Request $request, string $sku)
+    public function store(Request $request, int $sku_id)
     {
-        $request->merge(array('sku' => $sku));
+        $request->merge(array('sku_id' => $sku_id));
  
         $validate = [
             //stock table
-            'sku' => [
+            'sku_id' => [
                 'required',
-                'unique:stocks,sku',
-                'exists:skus,sku',
+                'unique:stocks,sku_id',
+                'exists:skus,id',
                 'max:30'
             ],
             'available' => [
@@ -71,20 +71,20 @@ class StockController extends Controller
 
     public function update(Request $request, string $id)
     {    
-        $sku = $request->sku;
+        $sku_id = $request->sku_id;
         $validate = [
             //stock table
-            'sku' => [
+            'sku_id' => [
                 'required',
-                function($attribute, $value, $fail) use($sku) {
-                    $total = Stock::where('sku', '!=', $sku)
-                                ->where('sku', $value)
+                function($attribute, $value, $fail) use($sku_id) {
+                    $total = Stock::where('sku_id', '!=', $sku_id)
+                                ->where('sku_id', $value)
                                 ->count();
                     if ($total > 0){
                         return $fail($attribute.' is invalid.');
                     }
                 },
-                'exists:skus,sku',
+                'exists:skus,id',
                 'max:30'
             ],
             'action' => [

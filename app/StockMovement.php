@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class StockMovement extends Model
 {
     protected $fillable = [
-        'sku' ,'quantity', 'type', 'reference_code', 'remark', 'created_by', 'updated_by'
+        'sku_id' ,'quantity', 'type', 'reference_code', 'remark', 'created_by', 'updated_by'
     ];
 
     public function tenant(){

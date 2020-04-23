@@ -15,7 +15,7 @@ class CreateStocksTable extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('sku', 30)->unique();
+            $table->integer('sku_id')->unsigned();
             $table->integer('available')->default('0');
             $table->integer('draft')->default('0');
             $table->integer('onhand')->default('0');

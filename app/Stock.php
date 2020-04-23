@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Stock extends Model
 {    
     protected $fillable = [
-        'sku' ,'available', 'draft', 'onhand'
+        'sku_id' ,'available', 'draft', 'onhand'
     ];
 
     public function sku()
     {
-        return $this->belongsTo('App\Sku', 'sku');
+        return $this->belongsTo('App\Sku');
     }
 
     public function cutting($quantity, $option=array()){
@@ -50,7 +50,7 @@ class Stock extends Model
             'draft' => $this->draft - $quantity
         );
         $this->update($data);
-        StockMovement::create(['sku' => $this->sku()->first()->sku, 'quantity' => $quantity, 'type' => 'release', 'remark' => !empty($option['remark'])?$option['remark']:null, 'reference_code' => !empty($option['reference_code'])?$option['reference_code']:null]);
+        StockMovement::create(['sku_id' => $this->sku()->first()->id, 'quantity' => $quantity, 'type' => 'release', 'remark' => !empty($option['remark'])?$option['remark']:null, 'reference_code' => !empty($option['reference_code'])?$option['reference_code']:null]);
         return array('success' => true);
     }
 
@@ -63,7 +63,7 @@ class Stock extends Model
             'draft' => $this->draft + $quantity
         );
         $this->update($data);
-        StockMovement::create(['sku' => $this->sku()->first()->sku, 'quantity' => $quantity, 'type' => 'get_back', 'remark' => !empty($option['remark'])?$option['remark']:null, 'reference_code' => !empty($option['reference_code'])?$option['reference_code']:null]);
+        StockMovement::create(['sku_id' => $this->sku()->first()->id, 'quantity' => $quantity, 'type' => 'get_back', 'remark' => !empty($option['remark'])?$option['remark']:null, 'reference_code' => !empty($option['reference_code'])?$option['reference_code']:null]);
         return array('success' => true);
     }
 
@@ -76,7 +76,7 @@ class Stock extends Model
             'available' => $this->available + $quantity
         );
         $this->update($data);
-        StockMovement::create(['sku' => $this->sku()->first()->sku, 'quantity' => $quantity, 'type' => 'fill_in', 'remark' => !empty($option['remark'])?$option['remark']:null, 'reference_code' => !empty($option['reference_code'])?$option['reference_code']:null, 'created_by' => !empty($option['created_by'])?$option['created_by']:null, 'updated_by' => !empty($option['updated_by'])?$option['updated_by']:null]);
+        StockMovement::create(['sku_id' => $this->sku()->first()->id, 'quantity' => $quantity, 'type' => 'fill_in', 'remark' => !empty($option['remark'])?$option['remark']:null, 'reference_code' => !empty($option['reference_code'])?$option['reference_code']:null, 'created_by' => !empty($option['created_by'])?$option['created_by']:null, 'updated_by' => !empty($option['updated_by'])?$option['updated_by']:null]);
         return array('success' => true);
     }
 
@@ -90,7 +90,7 @@ class Stock extends Model
             'available' => $this->available - $quantity
         );
         $this->update($data);
-        StockMovement::create(['sku' => $this->sku()->first()->sku, 'quantity' => $quantity, 'type' => 'take_out', 'remark' => !empty($option['remark'])?$option['remark']:null, 'reference_code' => !empty($option['reference_code'])?$option['reference_code']:null, 'created_by' => !empty($option['created_by'])?$option['created_by']:null, 'updated_by' => !empty($option['updated_by'])?$option['updated_by']:null]);
+        StockMovement::create(['sku_id' => $this->sku()->first()->id, 'quantity' => $quantity, 'type' => 'take_out', 'remark' => !empty($option['remark'])?$option['remark']:null, 'reference_code' => !empty($option['reference_code'])?$option['reference_code']:null, 'created_by' => !empty($option['created_by'])?$option['created_by']:null, 'updated_by' => !empty($option['updated_by'])?$option['updated_by']:null]);
         return array('success' => true);
     }
 }

@@ -34,6 +34,10 @@
 
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweet-alert2/sweet-alert2.min.css') }}">
     <script src="{{ asset('assets/plugins/sweet-alert2/plugin.js') }}"></script>
+
+    <!-- Date Picker -->
+    <link rel="stylesheet" href="{{ asset('assets/plugins/datepicker/datepicker3.css') }}">
+    <script src="{{ asset('assets/plugins/datepicker/plugin.js') }}"></script>
     @yield('css')
 </head>
 <body>
@@ -56,6 +60,15 @@
         function pricceFormat(text) {
             return text.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
         }
+        function readURL(input, element) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $(element).attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+      }
     });
 </script>
 @yield('js')

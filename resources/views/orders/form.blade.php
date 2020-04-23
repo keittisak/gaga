@@ -9,7 +9,7 @@
         เพิ่มคำสั่งซื้อ
     </h1>
 </div>
-<form id="form" action="{{route('orders.store')}}" method="POST">
+<form id="form" action="{{route('orders.store')}}" method="POST" enctype="multipart/form-data">
 @csrf
 <div class="row row-cards row-deck prompt-front">
     <div class="col-12 px-0">
@@ -24,7 +24,7 @@
                             <label class="form-label">หมายเลขโทรศัพท์</label>
                             <div class="row gutters-xs">
                                 <div class="col">
-                                <input type="text" class="form-control" placeholder="" name="phone" id="phone">
+                                <input type="text" class="form-control" placeholder="" name="shipping_phone" id="phone">
                                 </div>
                                 <span class="col-auto">
                                 <button class="btn btn-secondary" type="button"><i class="fe fe-search"></i></button>
@@ -33,8 +33,8 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">ชื่อผู้รับ</label>
-                            <input type="hidden" readonly name="customer_id">
-                            <input type="text" class="form-control" placeholder="" name="shipping_name" id="shipping_name">
+                            <input type="hidden" readonly name="customer_id" value="">
+                            <input type="text" class="form-control" placeholder="" name="shipping_full_name" id="shipping_full_name">
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">ที่อยู่</label>
@@ -43,7 +43,7 @@
                         <div class="form-group">
                             <label for="" class="form-label">ตำบล / อำเภอ / จังหวัด / รหัสไปรษณีย์</label>
                             <input type="hidden" readonly name="shipping_subdistrict_id" value="">
-                            <input type="hidden" readonly name="shipping_subdistrict_text" value="">
+                            <input type="hidden" readonly name="shipping_subdistrict_name" value="">
                             <select name="shipping_subdistrict" id="shipping_subdistrict" class="form-control custom-select">
                             </select>
                         </div>
@@ -84,6 +84,7 @@
                                 <div class="form-group">
                                     <div class="row gutters-xs">
                                         <div class="col">
+                                            <input type="hidden" class="form-control text-right" name="total_quantity" id="total_quantity" value="0" readonly>
                                             <input type="text" class="form-control text-right" name="total_amount" id="total_amount" value="0" readonly>
                                         </div>
                                         <span class="col-auto">
@@ -162,25 +163,33 @@
                     <div class="col-md-6 offset-md-3 col-12">
                         <div class="form-group">
                             <label for="" class="form-label">โอนเข้าบัญชี</label>
-                             <select class="form-control" name="transfere[bank_id]" id="bank_id_transfere">
-                                 <option>ธนาคารกสิกรไทย</option>
+                             <select class="form-control" name="payments[bank_id]" id="bank_id_transfer">
+                                 <option value="1" data-account-no="123456">ธนาคารกสิกรไทย</option>
                              </select>
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">เลขที่บัญชี</label>
-                            <div class="form-control-plaintext">123456</div>
+                            <div class="form-control-plaintext" id="account-no">123456</div>
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">วันที่โอน</label>
-                            <input type="text" name="transfere[date]" id="date_transfere" class="form-control" value="13/3/2020">
+                            <input type="text" name="payments[date]" id="date_transfer" class="form-control" value=""
+                            data-mask="00/00/0000" data-mask-clearifnotmatch="true" placeholder="{{DATE('d/m/Y')}}" autocomplete="off" maxlength="10">
+
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">เวลาโอน</label>
-                            <input type="text" name="transfere[time]" id="time_transfere" class="form-control" data-mask="00:00" data-mask-clearifnotmatch="true" placeholder="00:00" autocomplete="off" maxlength="5">
+                            <input type="text" name="payments[time]" id="time_transfer" class="form-control" data-mask="00:00" data-mask-clearifnotmatch="true" placeholder="00:00" autocomplete="off" maxlength="5">
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">ยอดโอน</label>
-                            <input type="text" name="transfere[amount]" id="amount_transfere" class="form-control" value="">
+                            <input type="text" name="payments[amount]" id="amount_transfer" class="form-control" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="" class="form-label">สลิปการโอน</label>
+                            <button type="button" class="btn btn-secondary d-block" id="btn-image-transfer"><i class="far fa-file-image"></i> เลือกไฟล์</button>
+                            <input type="file" name="image_transfer" id="image_transfer" class="form-control" style="display:none" accept="image/png, image/jpeg">
+                            <img src="#" class="rounded mt-3 w-75" id="image-transfer-preview" style="display:none">
                         </div>
                     </div>
                 </div>
@@ -231,7 +240,7 @@
 @endsection
 @section('js')
 <script>
-    require(['jquery', 'selectize', 'datatables'], function ($, selectize, $datatable) {
+    require(['jquery', 'selectize', 'datatables','jqueryForm', 'datepicker'], function ($, selectize, $datatable,form, datepicker) {
         $(function(){
             $.ajax({
                 url: '{{ asset("assets/json/subdistrict.json") }}',
@@ -247,17 +256,66 @@
                     onChange:function(val){
                         var data = this.options[val];
                         $('input[name=shipping_subdistrict_id]').val(val);
-                        $('input[name=shipping_subdistrict_text]').val(data.text);
+                        $('input[name=shipping_subdistrict_name]').val(data.text);
                     }
                 });
             });
         });
 
+        $('#date_transfer').datepicker({
+            autoclose:true,
+            format:'dd/mm/yyyy',
+            language:'th',
+            setDate: new Date()
+        });
+        $('#btn-image-transfer').on('click',function(e){
+            $('#image_transfer').click();
+        });
+        $('#image_transfer').change(function(e){
+            var input = this;
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#image-transfer-preview').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+            $('#image-transfer-preview').show();
+        });
+
         $('.btn-save').on('click',function(e){
             $('#form').submit();
-            var data = $('#form').serializeArray();
-            console.log(data);
         })
+        $('#form').ajaxForm({
+                dataType: 'json',
+                beforeSubmit: function (arr, $form, options) {
+                   
+                },
+                success: function (res) {
+                    // Swal.fire({
+                    //     type: "success",
+                    //     title: "บันทึกข้อมูลเรียบร้อย", 
+                    // }).then(function(){
+                    //     window.location.replace('{{ route('products.index') }}');
+                    // });
+                },
+                error: function (jqXHR, status, options, $form) {
+                    // $('.card-body').find('.dimmer').removeClass('active');
+                    // $('button[type=submit]').prop('disabled',false);
+                    
+                    // if(jqXHR.status === 422){
+                    //     Swal.fire({
+                    //         type: 'error',
+                    //         title: 'ข้อมูลที่ระบุไม่ถูกต้อง'
+                    //     });
+                    // }else{
+                    //     Swal.fire({
+                    //         type: 'error',
+                    //         title: jqXHR.responseJSON.message
+                    //     });
+                    // }
+                }
+            });
 
         $('#product-table tr').on('click', function(e){
             var product = $(this).data('product');
@@ -272,10 +330,10 @@
             if(product.type == 'simple'){
                 display_none = 'd-none'
             }
-            select_sku += `<select name="details[${index}][sku]" id="" class="form-control font-italic ${display_none}">`;
+            select_sku += `<select name="details[${index}][id]" id="" class="form-control font-italic ${display_none}">`;
             for(i = 0; i < skus.length; i++)
             {
-                select_sku += `<option value="${skus[i].sku}">${skus[i].name} - ${skus[i].price}</option>`
+                select_sku += `<option value="${skus[i].id}">${skus[i].name} - ${skus[i].price}</option>`
             }
             select_sku += `</select>`;
 
@@ -349,9 +407,14 @@
         function updateTotalAmount ()
         {
             var total_amount = 0;
+            var total_quantity = 0;
             $('.detail-total-amount').each(function(index,el){
                 total_amount += parseInt($(el).val());
+            });
+            $('.detail-quantity').each(function(index,el){
+                total_quantity += parseInt($(el).val());
             })
+            $('input[name=total_quantity]').val(total_quantity);
             $('input[name=total_amount]').val(total_amount);
             updateNetTotalAmount();
         }

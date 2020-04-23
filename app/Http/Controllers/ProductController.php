@@ -145,8 +145,6 @@ class ProductController extends Controller
                 foreach($request->skus as $key => $data){
                     if(isset($data['active'])){
                         $_request = new Request();
-                        $sku = $counter->generateCode('sku',0,3);
-                        $data['sku'] = $sku;
                         $data['product_id'] = $product->id;
                         $data['full_name'] = $product->name.' ('.$data['name'].')';
                         $_request->merge($data);

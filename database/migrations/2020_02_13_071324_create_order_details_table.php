@@ -18,7 +18,7 @@ class CreateOrderDetailsTable extends Migration
             $table->integer('order_id')->unsigned();
             $table->integer('product_id')->unsigned();
             $table->string('product_name')->nullable();
-            $table->string('sku', 30);
+            $table->integer('sku_id')->unsigned();
             $table->string('name')->nullable();
             $table->string('full_name')->nullable();
             $table->string('call_unit')->nullable();

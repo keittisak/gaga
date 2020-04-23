@@ -15,7 +15,7 @@ class CreateStockMovement extends Migration
     {
         Schema::create('stock_movements', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('sku',30);
+            $table->integer('sku_id')->unsigned();
             $table->integer('quantity')->default('0');
             $table->enum('type' ,['fill_in','take_out','release','get_back']);
             $table->string("reference_code")->nullable();

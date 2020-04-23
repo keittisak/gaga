@@ -32,7 +32,6 @@
                     <thead>
                         <tr>
                             <th class="w-40">สินค้า</th>
-                            <th class="w-5">SKU</th>
                             <th class="w-5 text-right">ราคา</th>
                             <th class="w-5 text-right">สต็อก</th>
                             <th class="w-5 text-right">จอง</th>
@@ -45,7 +44,6 @@
                             @foreach($item->skus as $index => $sku)
                             <tr>
                                 <td>{{$sku->full_name}}</td>
-                                <td>{{$sku->sku}}</td>
                                 <td class="text-right">{{number_format($sku->price,2)}}</td>
                                 <td class="text-right">{{number_format($sku->stock->available)}}</td>
                                 <td class="text-right">{{number_format($sku->stock->draft)}}</td>
@@ -105,7 +103,7 @@
                     <form id="form-stock-update" style="display: none">
                         <h5 class="text-cyan text-small" id="form-stock-update-title">ปรับจำนวน</h5>
                         <input type="hidden" name="id" readonly value="">
-                        <input type="hidden" name="sku" readonly value="">
+                        <input type="hidden" name="sku_id" readonly value="">
                         <input type="hidden" name="action" readonly value="set">
                         <input type="hidden" name="available" readonly value="0">
                         <div class="row mb-2">
@@ -163,7 +161,7 @@
 
                 $('.btn-action').attr('data-available', stock.available);
                 $('.btn-action').attr('data-id', stock.id);
-                $('.btn-action').attr('data-sku', stock.sku);
+                $('.btn-action').attr('data-sku-id', stock.sku_id);
                 $('#text-move-available').text(stock.available);
                 $('#text-move-draft').text(stock.draft);
                 $('#text-move-onhand').text(stock.onhand);
@@ -173,7 +171,7 @@
 
             $('.btn-action').on('click',function(e){
                 var id = $(this).data('id');
-                var sku = $(this).data('sku');
+                var sku_id = $(this).data('sku-id');
                 var type = $(this).data('type');
                 var available = $(this).data('available');
                 var element = ``;
@@ -184,7 +182,7 @@
                 }
                 $('#form-stock-update-title').text($(this).text());
                 $('#form-stock-update').find('input[name=id]').val(id);
-                $('#form-stock-update').find('input[name=sku]').val(sku);
+                $('#form-stock-update').find('input[name=sku_id]').val(sku_id);
                 $('#form-stock-update').find('input[name=action]').val(type);
                 $('#form-stock-update').find('input[name=quantity]').val(0);
                 $('#form-stock-update').find('input[name=available]').val(available);
@@ -208,7 +206,7 @@
 
             $('.btn-submit').on('click',function(e){
                 var id = $('#form-stock-update').find('input[name=id]').val();
-                var sku = $('#form-stock-update').find('input[name=sku]').val();
+                var sku_id = $('#form-stock-update').find('input[name=sku_id]').val();
                 var action = $('#form-stock-update').find('input[name=action]').val();
                 var quantity = $('#form-stock-update').find('input[name=quantity]').val();
                 var remark = $('#form-stock-update').find('input[name=remark]').val();
@@ -218,7 +216,7 @@
                     url: url,
                     method:'post',
                     dataType:'json',
-                    data: {_token:'{{ csrf_token() }}', _method:'put', id:id, sku:sku, action:action, quantity:quantity, remark:remark },
+                    data: {_token:'{{ csrf_token() }}', _method:'put', id:id, sku_id:sku_id, action:action, quantity:quantity, remark:remark },
                     beforeSend: function() {
                     }
                 }).done(function(data, textStatus, jqXHR) {

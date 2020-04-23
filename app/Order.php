@@ -17,12 +17,12 @@ class Order extends Model
 
     public function customer()
     {
-        return $this->belongsTo('App\User', 'customer_id');
+        return $this->belongsTo('App\Customer');
     }
 
     public function payments()
     {
-        return $this->belongsToMany('App\Payment')->withPivot('amount_by_order')->withTimestamps();
+        return $this->belongsToMany('App\Payment')->withTimestamps();
     }
 
     public function created_by_user()
