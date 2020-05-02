@@ -40,6 +40,27 @@
     <script src="{{ asset('assets/plugins/datepicker/plugin.js') }}"></script>
     @yield('css')
 </head>
+<style>
+    .loader-page{
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgb(255, 255, 255);
+        opacity: 0.5;
+        z-index:99998;
+    }
+    .loader-center{
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index:99999;
+        
+    }
+</style>
 <body>
     <div class="page d-block">
         <div class="page-main">
@@ -57,6 +78,13 @@
 <script>
     require(['input-mask']);
     require(['jquery'], function($) {
+        $(document).on('keypress keyup blur','.number-only',function(event){
+            $(this).val($(this).val().replace(/\D/g, ""));
+            if ((event.which < 48 || event.which > 57)) {
+                event.preventDefault();
+            }
+        });
+        
         function pricceFormat(text) {
             return text.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
         }
@@ -69,7 +97,22 @@
                 reader.readAsDataURL(input.files[0]);
             }
       }
+
+    loader = {
+        init: function(e){
+            let loading = `
+            <div class="loader loader-center"></div>
+            <div class="loader-page"></div>
+          `;
+          $('body').append(loading)
+        },
+        close: function(e){
+            $('.loader').remove();
+            $('.loader-page').remove();
+        }
+      }
     });
+      
 </script>
 @yield('js')
 </html>

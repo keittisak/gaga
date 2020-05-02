@@ -1,5 +1,5 @@
 @extends('layouts.main')
-@section('title','Layouts')
+@section('title',$title_en)
 @section('css')
     {{--  Css  --}}
 @endsection
@@ -21,19 +21,40 @@
                 <div class="row">
                     <div class="col-md-6 offset-md-3 col-12">
                         <div class="form-group">
+                            <div class="form-label">ช่องทางการสั่งซื้อ</div>
+                            <div class="custom-controls-stacked">
+                              <label class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" class="custom-control-input" name="sale_channel" value="line" checked="">
+                                <span class="custom-control-label">Line</span>
+                              </label>
+                              <label class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" class="custom-control-input" name="sale_channel" value="facebook">
+                                <span class="custom-control-label">Facebook</span>
+                              </label>
+                              <label class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" class="custom-control-input" name="sale_channel" value="instagram">
+                                <span class="custom-control-label">Instagram</span>
+                              </label>
+                              <label class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" class="custom-control-input" name="sale_channel" value="other">
+                                <span class="custom-control-label">Other</span>
+                              </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="form-label">หมายเลขโทรศัพท์</label>
                             <div class="row gutters-xs">
                                 <div class="col">
-                                <input type="text" class="form-control" placeholder="" name="shipping_phone" id="phone">
+                                <input type="number" class="form-control number-only" placeholder="" name="shipping_phone" id="phone">
                                 </div>
                                 <span class="col-auto">
-                                <button class="btn btn-secondary" type="button"><i class="fe fe-search"></i></button>
+                                <button class="btn btn-secondary" type="button" id="btn-search-phone"><i class="fe fe-search"></i></button>
                                 </span>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="form-label">ชื่อผู้รับ</label>
-                            <input type="hidden" readonly name="customer_id" value="">
+                            <input type="hidden" readonly name="customer_id" id="customer_id" value="">
                             <input type="text" class="form-control" placeholder="" name="shipping_full_name" id="shipping_full_name">
                         </div>
                         <div class="form-group">
@@ -240,7 +261,7 @@
 @endsection
 @section('js')
 <script>
-    require(['jquery', 'selectize', 'datatables','jqueryForm', 'datepicker'], function ($, selectize, $datatable,form, datepicker) {
+    require(['jquery', 'selectize', 'datatables','jqueryForm', 'datepicker','sweetAlert'], function ($, selectize, $datatable,form, datepicker,Swal) {
         $(function(){
             $.ajax({
                 url: '{{ asset("assets/json/subdistrict.json") }}',
@@ -255,8 +276,13 @@
                 $('#shipping_subdistrict').selectize({
                     onChange:function(val){
                         var data = this.options[val];
-                        $('input[name=shipping_subdistrict_id]').val(val);
-                        $('input[name=shipping_subdistrict_name]').val(data.text);
+                        $('input[name=shipping_subdistrict_id]').val('');
+                        $('input[name=shipping_subdistrict_name]').val('');
+                        if(data !== undefined){
+                            $('input[name=shipping_subdistrict_id]').val(val);
+                            $('input[name=shipping_subdistrict_name]').val(data.text);
+                        }
+                        
                     }
                 });
             });
@@ -267,6 +293,42 @@
             format:'dd/mm/yyyy',
             language:'th',
             setDate: new Date()
+        });
+        $('#btn-search-phone').on('click',function(e){
+            var phone = $('input[name=shipping_phone').val();
+            $.ajax({
+                url: "{{ route('customers.search.phone') }}",
+                method: "GET",
+                data:{
+                        phone:phone
+                    },
+                beforeSend: function( xhr ) {
+                    loader.init();
+                }
+            }).done(function(data){
+                if(data.id){
+                    $('#customer_id').val(data.id);
+                    $('#shipping_full_name').val(data.full_name);
+                    $('#shipping_address').val(data.address);
+                    var $select = $('#shipping_subdistrict').selectize();
+                    var selectize = $select[0].selectize;
+                    selectize.setValue(data.subdistrict_id);
+                }else{
+                    $('#customer_id').val('');
+                    $('#shipping_full_name').val('');
+                    $('#shipping_address').val('');
+                    var $select = $('#shipping_subdistrict').selectize();
+                    var selectize = $select[0].selectize;
+                    selectize.setValue('');
+                }
+                loader.close();
+            }).fail(function( jqxhr, textStatus ) {
+                loader.close();
+                Swal.fire({
+                    type: 'error',
+                    title: jqXHR.responseJSON.message
+                });
+            });
         });
         $('#btn-image-transfer').on('click',function(e){
             $('#image_transfer').click();
@@ -289,37 +351,35 @@
         $('#form').ajaxForm({
                 dataType: 'json',
                 beforeSubmit: function (arr, $form, options) {
-                   
+                    loader.init();
                 },
                 success: function (res) {
-                    // Swal.fire({
-                    //     type: "success",
-                    //     title: "บันทึกข้อมูลเรียบร้อย", 
-                    // }).then(function(){
-                    //     window.location.replace('{{ route('products.index') }}');
-                    // });
+                    loader.close();
+                    Swal.fire({
+                        type: "success",
+                        title: "บันทึกข้อมูลเรียบร้อย", 
+                    }).then(function(){
+                        window.location.replace('{{ route('products.index') }}');
+                    });
                 },
                 error: function (jqXHR, status, options, $form) {
-                    // $('.card-body').find('.dimmer').removeClass('active');
-                    // $('button[type=submit]').prop('disabled',false);
-                    
-                    // if(jqXHR.status === 422){
-                    //     Swal.fire({
-                    //         type: 'error',
-                    //         title: 'ข้อมูลที่ระบุไม่ถูกต้อง'
-                    //     });
-                    // }else{
-                    //     Swal.fire({
-                    //         type: 'error',
-                    //         title: jqXHR.responseJSON.message
-                    //     });
-                    // }
+                    loader.close();
+                    if(jqXHR.status === 422){
+                        Swal.fire({
+                            type: 'error',
+                            title: 'ข้อมูลที่ระบุไม่ถูกต้อง'
+                        });
+                    }else{
+                        Swal.fire({
+                            type: 'error',
+                            title: jqXHR.responseJSON.message
+                        });
+                    }
                 }
             });
 
         $('#product-table tr').on('click', function(e){
             var product = $(this).data('product');
-            console.log(product);
             var skus = product.skus;
             var element = ``;
             var select_sku = ``;

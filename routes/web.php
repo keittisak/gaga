@@ -26,7 +26,6 @@ Route::get('orders', function () {
 //Order
 Route::get('/orders/create', 'OrderController@create')->name('orders.create');
 Route::post('/orders', 'OrderController@store')->name('orders.store');
-
 //Product
 Route::get('/products', 'ProductController@index')->name('products.index');
 Route::get('/products/data', 'ProductController@data')->name('products.data');
@@ -36,6 +35,10 @@ Route::get('/products/{id}', 'ProductController@show')->name('products.show');
 Route::get('/products/{id}/edit', 'ProductController@edit')->name('products.edit');
 Route::put('/products/{id}', 'ProductController@update')->name('products.update');
 Route::delete('/products/{id}', 'ProductController@destroy')->name('products.delete');
+//Customer
+Route::get('/customers', 'CustomerController@index')->name('customers.index');
+Route::get('/customers/data', 'CustomerController@data')->name('customers.index');
+Route::get('/customers/search-phone', 'CustomerController@searchPhone')->name('customers.search.phone');
 
 
 Route::get('/stocks', 'StockController@index')->name('stocks.index');

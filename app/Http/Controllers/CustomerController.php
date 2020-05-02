@@ -19,6 +19,9 @@ class CustomerController extends Controller
             'full_name' => [
                 'required',
             ],
+            'address' => [
+                'nullable'
+            ],
             'full_address' =>[
                 'required',
             ],
@@ -51,6 +54,9 @@ class CustomerController extends Controller
         $validate = [
             'full_name' => [
                 'required',
+            ],
+            'address' => [
+                'nullable'
             ],
             'full_address' =>[
                 'required',

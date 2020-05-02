@@ -15,11 +15,13 @@ class OrderController extends Controller
 {
     public function create (Request $request)
     {
+        $order = new Order();
         $data = [
             'action' => 'create',
             'title_en' => 'Add Order',
             'title_th' => 'เพิ่มคำสั่งซื้อ',
-            'products' => Product::with(['skus'])->get()
+            'products' => Product::with(['skus'])->get(),
+            'order' => $order
         ];
         return view('orders.form', $data);
     }
@@ -103,10 +105,11 @@ class OrderController extends Controller
         $request->validate($validate);
         $data = array_only($request->all(), array_keys($validate));
         $order = DB::transaction(function() use($request, $data) {
-            if (!isset($request->customer_id)){
+            if (empty($request->customer_id)){
                 $_request = new Request();
                 $_request->merge([
                     'full_name' => $request->shipping_full_name,
+                    'address' => $request->shipping_address,
                     'full_address' => $request->shipping_address.' '.$request->shipping_subdistrict_name,
                     'subdistrict_id' => $request->shipping_subdistrict_id,
                     'phone' => $request->shipping_phone
@@ -124,12 +127,11 @@ class OrderController extends Controller
                 $customer = (new CustomerController)->update($_request, $request->customer_id);
             }
 
-
-
             $counter = new Counter();
             $code = $counter->generateCode('gg');
             $data['code'] = $code;
             $data['shipping_full_address'] = $data['shipping_address'].' '.$data['shipping_subdistrict_name'];
+
             $order = Order::create($data);
             if (isset($request->details)){
                 foreach ($request->details as $data){
@@ -174,6 +176,15 @@ class OrderController extends Controller
 
     public function edit (Request $request, int $id)
     {
-
+        $order = new Order();
+        $order = $order->findOrFail($id);
+        $data = [
+            'action' => 'create',
+            'title_en' => 'Add Order',
+            'title_th' => 'เพิ่มคำสั่งซื้อ',
+            'products' => Product::with(['skus'])->get(),
+            'order' => $order
+        ];
+        return view('orders.form', $data);
     }
 }
