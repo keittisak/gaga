@@ -24,6 +24,7 @@ class CreateOrdersTable extends Migration
             $table->double('overpay',10,4)->default(0);
             $table->double('net_total_amount',10,4)->default(0);
             $table->text('shipping_full_name')->nullable();
+            $table->text('shipping_address')->nullable();
             $table->text('shipping_full_address')->nullable();
             $table->integer('shipping_country_id')->unsigned()->nullable();
             $table->integer('shipping_province_id')->unsigned()->nullable();

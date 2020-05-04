@@ -136,7 +136,7 @@ class OrderController extends Controller
             if (isset($request->details)){
                 foreach ($request->details as $data){
                     $_request = new Request();
-                    $sku = Sku::find($data['id'])->toArray();
+                    $sku = Sku::find($data['sku_id'])->toArray();
                     $data['sku_id'] = $sku['id'];
                     unset($sku['id']);
                     unset($sku['status']);
@@ -177,11 +177,11 @@ class OrderController extends Controller
     public function edit (Request $request, int $id)
     {
         $order = new Order();
-        $order = $order->findOrFail($id);
+        $order = $order->with(['details.product.skus','payments'])->findOrFail($id);
         $data = [
-            'action' => 'create',
-            'title_en' => 'Add Order',
-            'title_th' => 'เพิ่มคำสั่งซื้อ',
+            'action' => 'update',
+            'title_en' => 'Update Order',
+            'title_th' => 'แก้ไขคำสั่งซื้อ',
             'products' => Product::with(['skus'])->get(),
             'order' => $order
         ];

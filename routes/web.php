@@ -11,6 +11,12 @@
 |
 */
 
+Route::get('/artisan/storage', function() {
+    $command = 'storage:link';
+    $result = \Artisan::call($command);
+    return \Artisan::output();
+});
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -26,6 +32,7 @@ Route::get('orders', function () {
 //Order
 Route::get('/orders/create', 'OrderController@create')->name('orders.create');
 Route::post('/orders', 'OrderController@store')->name('orders.store');
+Route::get('/orders/{id}/edit', 'OrderController@edit')->name('orders.edit');
 //Product
 Route::get('/products', 'ProductController@index')->name('products.index');
 Route::get('/products/data', 'ProductController@data')->name('products.data');

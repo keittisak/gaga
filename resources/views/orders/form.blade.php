@@ -6,7 +6,7 @@
 @section('content')
 <div class="page-header">
     <h1 class="page-title prompt-front">
-        เพิ่มคำสั่งซื้อ
+        {{$title_th}} {{($action == 'update')?strtoupper($order->code):''}}
     </h1>
 </div>
 <form id="form" action="{{route('orders.store')}}" method="POST" enctype="multipart/form-data">
@@ -24,19 +24,19 @@
                             <div class="form-label">ช่องทางการสั่งซื้อ</div>
                             <div class="custom-controls-stacked">
                               <label class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" name="sale_channel" value="line" checked="">
+                                <input type="radio" class="custom-control-input" name="sale_channel" value="line"@if($order->sale_channel == 'line' || $action == 'create') checked="" @endif>
                                 <span class="custom-control-label">Line</span>
                               </label>
                               <label class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" name="sale_channel" value="facebook">
+                                <input type="radio" class="custom-control-input" name="sale_channel" value="facebook" @if($order->sale_channel == 'facebook') checked="" @endif>
                                 <span class="custom-control-label">Facebook</span>
                               </label>
                               <label class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" name="sale_channel" value="instagram">
+                                <input type="radio" class="custom-control-input" name="sale_channel" value="instagram" @if($order->sale_channel == 'instagram') checked="" @endif>
                                 <span class="custom-control-label">Instagram</span>
                               </label>
                               <label class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" name="sale_channel" value="other">
+                                <input type="radio" class="custom-control-input" name="sale_channel" value="other" @if($order->sale_channel == 'other') checked="" @endif>
                                 <span class="custom-control-label">Other</span>
                               </label>
                             </div>
@@ -45,7 +45,7 @@
                             <label class="form-label">หมายเลขโทรศัพท์</label>
                             <div class="row gutters-xs">
                                 <div class="col">
-                                <input type="number" class="form-control number-only" placeholder="" name="shipping_phone" id="phone">
+                                <input type="number" class="form-control number-only" placeholder="" name="shipping_phone" id="phone" value="{{ $order->shipping_phone }}">
                                 </div>
                                 <span class="col-auto">
                                 <button class="btn btn-secondary" type="button" id="btn-search-phone"><i class="fe fe-search"></i></button>
@@ -54,12 +54,12 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">ชื่อผู้รับ</label>
-                            <input type="hidden" readonly name="customer_id" id="customer_id" value="">
-                            <input type="text" class="form-control" placeholder="" name="shipping_full_name" id="shipping_full_name">
+                            <input type="hidden" readonly name="customer_id" id="customer_id" value="{{ $order->customer_id }}">
+                        <input type="text" class="form-control" placeholder="" name="shipping_full_name" id="shipping_full_name" value="{{ $order->shipping_full_name }}">
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">ที่อยู่</label>
-                            <textarea class="form-control" name="shipping_address" id="shipping_address"></textarea>
+                            <textarea class="form-control" name="shipping_address" id="shipping_address">{{ $order->shipping_address }}</textarea>
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">ตำบล / อำเภอ / จังหวัด / รหัสไปรษณีย์</label>
@@ -86,6 +86,47 @@
                 <div class="row">
                     <div class="col-md-6 offset-md-3 col-12">
                         <div class="detail-display">
+
+                            @if($order->details)
+                            @foreach($order->details as $key => $item)
+                            <div class="row detail_products">
+                                <div class="col-md-6 col-6">
+                                    <div class="form-group">
+                                    <label class="form-label">{{ $item->product->name }}</label>
+                                    <input type="hidden" name="details[{{$key}}][product_id]" value="{{ $item->product->id }}">
+                                        <input type="hidden" name="details[{{$key}}][product_name]" value="{{ $item->product->name }}">
+                                    <select name="details[{{$key}}][sku_id]" id="" class="form-control font-italic {{ ($item->product->type == 'simple')?'d-none':'' }}">
+                                            @foreach ($item->product->skus as $sku)
+                                                <option value="{{$sku->id}}" {{ ($item->sku_id == $sku->id)? 'selected':'' }}>{{$sku->name.' - '.$sku->price}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 offset-md-3 offset-1 col-5">
+                                    <div class="form-group">
+                                        <div class="row gutters-xs">
+                                            <div class="col">
+                                            <input type="text" class="form-control form-control-sm text-right mb-3 detail-total-amount" name="details[{{$key}}][total_amount]" value="{{$item->total_amount}}" readonly="">
+                                            </div>
+                                            <div class="col-auto">
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-prepend">
+                                                    <button class="btn btn-outline-primary btn-minus" type="button" data-price="{{$item->price}}"><i class="fe fe-minus"></i></button>
+                                                    </span>
+                                                    <input type="text" class="form-control text-center detail-quantity" name="details[{{$key}}][quantity]" value="{{$item->quantity}}">
+                                                    <span class="input-group-append">
+                                                        <button class="btn btn-outline-primary btn-plus" type="button" data-price="{{$item->price}}"><i class="fe fe-plus"></i></button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            @endforeach
+                            @endif
+
                         </div>
                         <div class="btn-list text-center">
                             <button type="button" class="btn btn-pill btn-outline-primary" data-toggle="modal" data-target="#product-modal"><i class="fe fe-plus"></i></button>
@@ -105,8 +146,8 @@
                                 <div class="form-group">
                                     <div class="row gutters-xs">
                                         <div class="col">
-                                            <input type="hidden" class="form-control text-right" name="total_quantity" id="total_quantity" value="0" readonly>
-                                            <input type="text" class="form-control text-right" name="total_amount" id="total_amount" value="0" readonly>
+                                        <input type="hidden" class="form-control text-right" name="total_quantity" id="total_quantity" value="{{$order->total_quantity}}" readonly>
+                                            <input type="text" class="form-control text-right" name="total_amount" id="total_amount" value="{{($order == 'update')?$order->total_amount:0}}" readonly>
                                         </div>
                                         <span class="col-auto">
                                             บาท
@@ -123,7 +164,7 @@
                                 <div class="form-group">
                                     <div class="row gutters-xs">
                                         <div class="col">
-                                            <input type="text" class="form-control text-right" name="shipping_fee" id="shipping_fee" value="0">
+                                            <input type="text" class="form-control text-right" name="shipping_fee" id="shipping_fee" value="{{($order == 'update')?$order->shipping_fee:0}}">
                                         </div>
                                         <span class="col-auto">
                                             บาท
@@ -140,7 +181,7 @@
                                 <div class="form-group">
                                     <div class="row gutters-xs">
                                         <div class="col">
-                                            <input type="text" class="form-control text-right" name="discount_amount" id="discount_amount" value="0">
+                                            <input type="text" class="form-control text-right" name="discount_amount" id="discount_amount" value="{{($order == 'update')?$order->discount_amount:0}}">
                                         </div>
                                         <span class="col-auto">
                                             บาท
@@ -157,7 +198,7 @@
                                 <div class="form-group">
                                     <div class="row gutters-xs">
                                         <div class="col">
-                                            <input type="text" class="form-control text-right" name="net_total_amount" id="net_total_amount" value="" readonly>
+                                            <input type="text" class="form-control text-right" name="net_total_amount" id="net_total_amount" value="{{($order == 'update')?$order->net_total_amount:0}}" readonly>
                                         </div>
                                         <span class="col-auto">
                                             บาท
@@ -194,23 +235,25 @@
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">วันที่โอน</label>
-                            <input type="text" name="payments[date]" id="date_transfer" class="form-control" value=""
+                        <input type="text" name="payments[date]" id="date_transfer" class="form-control" value="{{ (isset($order->payments[0]))?date('d/m/Y', strtotime($order->payments[0]->transfered_at)):'' }}"
                             data-mask="00/00/0000" data-mask-clearifnotmatch="true" placeholder="{{DATE('d/m/Y')}}" autocomplete="off" maxlength="10">
 
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">เวลาโอน</label>
-                            <input type="text" name="payments[time]" id="time_transfer" class="form-control" data-mask="00:00" data-mask-clearifnotmatch="true" placeholder="00:00" autocomplete="off" maxlength="5">
+                            <input type="text" name="payments[time]" id="time_transfer" class="form-control" data-mask="00:00" data-mask-clearifnotmatch="true" placeholder="00:00" autocomplete="off" maxlength="5"
+                            value="{{ (isset($order->payments[0]))?date('H:i', strtotime($order->payments[0]->transfered_at)):'' }}"
+                            >
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">ยอดโอน</label>
-                            <input type="text" name="payments[amount]" id="amount_transfer" class="form-control" value="">
+                            <input type="text" name="payments[amount]" id="amount_transfer" class="form-control" value="{{ (isset($order->payments[0]))?$order->payments[0]->amount:'' }}">
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">สลิปการโอน</label>
                             <button type="button" class="btn btn-secondary d-block" id="btn-image-transfer"><i class="far fa-file-image"></i> เลือกไฟล์</button>
                             <input type="file" name="image_transfer" id="image_transfer" class="form-control" style="display:none" accept="image/png, image/jpeg">
-                            <img src="#" class="rounded mt-3 w-75" id="image-transfer-preview" style="display:none">
+                            <img src="{{ (isset($order->payments[0]))?$order->payments[0]->image:'#' }}" class="rounded mt-3 w-75" id="image-transfer-preview" {{ (!isset($order->payments[0]))?'style="display:none"':'' }}>
                         </div>
                     </div>
                 </div>
@@ -221,8 +264,8 @@
 </div>
 
 <div class="btn-list text-center prompt-front">
-    <button type="button" class="btn btn-pill btn-primary btn-lg btn-save">บันทึกคำสั่งซื้อ</button>
-    <button class="btn btn-pill btn-secondary btn-lg">บันทึกคำสั่งซื้อและเพิ่ม</button>
+    <button type="button" class="btn btn-pill btn-primary btn-lg btn-save" value="save">บันทึกคำสั่งซื้อ</button>
+    <button class="btn btn-pill btn-secondary btn-lg btn-save" value="save_and_new">บันทึกคำสั่งซื้อและเพิ่ม</button>
 </div>
 </form>
 <div class="modal fade prompt-front" id="product-modal" tabindex="-1" role="dialog">
@@ -267,13 +310,14 @@
                 url: '{{ asset("assets/json/subdistrict.json") }}',
                 dataType: 'json',
                 success: function(data) {
+                    var selected = '';
                     $('#shipping_subdistrict').append('<option value=""></option>');
                     for (var i in data) {
-                        $('#shipping_subdistrict').append('<option value="' + i + '">' + data[i].name + '</option>');
+                        $('#shipping_subdistrict').append(`<option value="${i}">${data[i].name}</option>`);
                     }
                 }
             }).done(function( data ) {
-                $('#shipping_subdistrict').selectize({
+                $select = $('#shipping_subdistrict').selectize({
                     onChange:function(val){
                         var data = this.options[val];
                         $('input[name=shipping_subdistrict_id]').val('');
@@ -285,6 +329,12 @@
                         
                     }
                 });
+
+                @if($order->shipping_subdistrict_id)
+                var selectize = $select[0].selectize;
+                selectize.setValue({!!$order->shipping_subdistrict_id!!});
+                @endif
+
             });
         });
 
@@ -344,10 +394,11 @@
             }
             $('#image-transfer-preview').show();
         });
-
+        var bntSave = 'save';
         $('.btn-save').on('click',function(e){
+            bntSave = $(this).val();
             $('#form').submit();
-        })
+        });
         $('#form').ajaxForm({
                 dataType: 'json',
                 beforeSubmit: function (arr, $form, options) {
@@ -359,7 +410,10 @@
                         type: "success",
                         title: "บันทึกข้อมูลเรียบร้อย", 
                     }).then(function(){
-                        window.location.replace('{{ route('products.index') }}');
+                        if(bntSave == 'save_and_new'){
+                            window.location.replace('{{ route('orders.create') }}');
+                        }
+                        window.location.replace('{{ route('orders.index') }}');
                     });
                 },
                 error: function (jqXHR, status, options, $form) {
@@ -367,7 +421,7 @@
                     if(jqXHR.status === 422){
                         Swal.fire({
                             type: 'error',
-                            title: 'ข้อมูลที่ระบุไม่ถูกต้อง'
+                            title: 'ระบุข้อมูลไม่ถูกต้อง'
                         });
                     }else{
                         Swal.fire({
@@ -390,7 +444,7 @@
             if(product.type == 'simple'){
                 display_none = 'd-none'
             }
-            select_sku += `<select name="details[${index}][id]" id="" class="form-control font-italic ${display_none}">`;
+            select_sku += `<select name="details[${index}][sku_id]" id="" class="form-control font-italic ${display_none}">`;
             for(i = 0; i < skus.length; i++)
             {
                 select_sku += `<option value="${skus[i].id}">${skus[i].name} - ${skus[i].price}</option>`
