@@ -9,8 +9,11 @@
         {{$title_th}} {{($action == 'update')?strtoupper($order->code):''}}
     </h1>
 </div>
-<form id="form" action="{{route('orders.store')}}" method="POST" enctype="multipart/form-data">
+<form id="form" action="{{ ($action =='create')?route('orders.store'):route('orders.update',$order->id) }}" method="POST" enctype="multipart/form-data">
 @csrf
+@if($action =='update')
+@method('PUT')
+@endif
 <div class="row row-cards row-deck prompt-front">
     <div class="col-12 px-0">
         <div class="card">
@@ -90,6 +93,7 @@
                             @if($order->details)
                             @foreach($order->details as $key => $item)
                             <div class="row detail_products">
+                                <input type="hidden" name="details[{{$key}}][id]" value="{{ $item->id }}">
                                 <div class="col-md-6 col-6">
                                     <div class="form-group">
                                     <label class="form-label">{{ $item->product->name }}</label>
@@ -111,11 +115,15 @@
                                             <div class="col-auto">
                                                 <div class="input-group input-group-sm">
                                                     <span class="input-group-prepend">
-                                                    <button class="btn btn-outline-primary btn-minus" type="button" data-price="{{$item->price}}"><i class="fe fe-minus"></i></button>
+                                                        @if($item->quantity > 1)
+                                                        <button class="btn btn-outline-primary btn-minus btn-action" type="button" data-price="{{$item->price}}"><i class="fas fa-minus"></i></button>
+                                                        @else
+                                                        <button class="btn btn-outline-danger btn-times btn-action" type="button" data-price="{{$item->price}}"><i class="fas fa-times"></i></button>
+                                                        @endif
                                                     </span>
                                                     <input type="text" class="form-control text-center detail-quantity" name="details[{{$key}}][quantity]" value="{{$item->quantity}}">
                                                     <span class="input-group-append">
-                                                        <button class="btn btn-outline-primary btn-plus" type="button" data-price="{{$item->price}}"><i class="fe fe-plus"></i></button>
+                                                        <button class="btn btn-outline-primary btn-plus" type="button" data-price="{{$item->price}}"><i class="fas fa-plus"></i></button>
                                                     </span>
                                                 </div>
                                             </div>
@@ -147,7 +155,7 @@
                                     <div class="row gutters-xs">
                                         <div class="col">
                                         <input type="hidden" class="form-control text-right" name="total_quantity" id="total_quantity" value="{{$order->total_quantity}}" readonly>
-                                            <input type="text" class="form-control text-right" name="total_amount" id="total_amount" value="{{($order == 'update')?$order->total_amount:0}}" readonly>
+                                            <input type="text" class="form-control text-right" name="total_amount" id="total_amount" value="{{($action == 'update')?$order->total_amount:0}}" readonly>
                                         </div>
                                         <span class="col-auto">
                                             บาท
@@ -164,7 +172,7 @@
                                 <div class="form-group">
                                     <div class="row gutters-xs">
                                         <div class="col">
-                                            <input type="text" class="form-control text-right" name="shipping_fee" id="shipping_fee" value="{{($order == 'update')?$order->shipping_fee:0}}">
+                                            <input type="text" class="form-control text-right" name="shipping_fee" id="shipping_fee" value="{{($action == 'update')?$order->shipping_fee:0}}">
                                         </div>
                                         <span class="col-auto">
                                             บาท
@@ -181,7 +189,7 @@
                                 <div class="form-group">
                                     <div class="row gutters-xs">
                                         <div class="col">
-                                            <input type="text" class="form-control text-right" name="discount_amount" id="discount_amount" value="{{($order == 'update')?$order->discount_amount:0}}">
+                                            <input type="text" class="form-control text-right" name="discount_amount" id="discount_amount" value="{{($action == 'update')?$order->discount_amount:0}}">
                                         </div>
                                         <span class="col-auto">
                                             บาท
@@ -198,7 +206,7 @@
                                 <div class="form-group">
                                     <div class="row gutters-xs">
                                         <div class="col">
-                                            <input type="text" class="form-control text-right" name="net_total_amount" id="net_total_amount" value="{{($order == 'update')?$order->net_total_amount:0}}" readonly>
+                                            <input type="text" class="form-control text-right" name="net_total_amount" id="net_total_amount" value="{{($action == 'update')?$order->net_total_amount:0}}" readonly>
                                         </div>
                                         <span class="col-auto">
                                             บาท
@@ -219,6 +227,9 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">การชำระเงิน</h3>
+                @if(isset($order->payments[0]))
+                <input type="hidden" name="payments[id]" value="{{$order->payments[0]->id}}">
+                @endif
             </div>
             <div class="card-body">
                 <div class="row">
@@ -253,7 +264,7 @@
                             <label for="" class="form-label">สลิปการโอน</label>
                             <button type="button" class="btn btn-secondary d-block" id="btn-image-transfer"><i class="far fa-file-image"></i> เลือกไฟล์</button>
                             <input type="file" name="image_transfer" id="image_transfer" class="form-control" style="display:none" accept="image/png, image/jpeg">
-                            <img src="{{ (isset($order->payments[0]))?$order->payments[0]->image:'#' }}" class="rounded mt-3 w-75" id="image-transfer-preview" {{ (!isset($order->payments[0]))?'style="display:none"':'' }}>
+                            <img src="{{ (isset($order->payments[0]))?$order->payments[0]->image:'#' }}" class="rounded mt-3 w-75" id="image-transfer-preview" {{ (!isset($order->payments[0]))?'style=display:none':'' }}>
                         </div>
                     </div>
                 </div>
@@ -450,7 +461,7 @@
                 select_sku += `<option value="${skus[i].id}">${skus[i].name} - ${skus[i].price}</option>`
             }
             select_sku += `</select>`;
-
+            // <button class="btn btn-outline-primary btn-minus" type="button" data-price="${product.skus[0].price}"><i class="fe fe-minus"></i></button>
             element += `<div class="row detail_products">
                             <div class="col-md-6 col-6">
                                 <div class="form-group">
@@ -469,11 +480,11 @@
                                         <div class="col-auto">
                                             <div class="input-group input-group-sm">
                                                 <span class="input-group-prepend">
-                                                    <button class="btn btn-outline-primary btn-minus" type="button" data-price="${product.skus[0].price}"><i class="fe fe-minus"></i></button>
+                                                    <button class="btn btn-outline-danger btn-times btn-action" type="button" data-price="${product.skus[0].price}"><i class="fas fa-times"></i></button>
                                                 </span>
                                                 <input type="text" class="form-control text-center detail-quantity" name="details[${index}][quantity]" value="1">
                                                 <span class="input-group-append">
-                                                    <button class="btn btn-outline-primary btn-plus" type="button" data-price="${product.skus[0].price}"><i class="fe fe-plus"></i></button>
+                                                    <button class="btn btn-outline-primary btn-plus" type="button" data-price="${product.skus[0].price}"><i class="fas fa-plus"></i></button>
                                                 </span>
                                             </div>
                                         </div>
@@ -486,6 +497,12 @@
             updateTotalAmount();
             $('#product-modal').modal('hide');
         });
+
+        $(document).on('click', '.btn-times',function(e){
+            var row = $(this).closest('.detail_products');
+            $(row).remove();
+            updateTotalAmount();
+        });
         
         $(document).on('click', '.btn-minus',function(e){
             var total_amount = $(this).closest('.form-group').find('.detail-total-amount');
@@ -494,6 +511,15 @@
             if($(quantity).val() > 1)
             {
                 $(quantity).val(parseInt($(quantity).val())-1);
+            }
+
+            if($(quantity).val() <= 1)
+            {
+                $(this).removeClass('btn-outline-primary');
+                $(this).removeClass('btn-minus');
+                $(this).addClass('btn-outline-danger');
+                $(this).addClass('btn-times');
+                $(this).html(`<i class="fas fa-times"></i>`);
             }
             $(total_amount).val(parseInt(price)*parseInt($(quantity).val()));
             updateTotalAmount();
@@ -506,6 +532,19 @@
             var price = $(this).data('price');
             $(quantity).val(parseInt($(quantity).val())+1);
             $(total_amount).val(parseInt(price)*parseInt($(quantity).val()));
+
+            if($(quantity).val() > 1)
+            {
+                var btnAction = $(this).closest('.input-group').find('.btn-action');
+                if($(btnAction).hasClass('btn-times')){
+                    $(btnAction).removeClass('btn-outline-danger');
+                    $(btnAction).removeClass('btn-times');
+                    $(btnAction).addClass('btn-outline-primary');
+                    $(btnAction).addClass('btn-minus');
+                    $(btnAction).html(`<i class="fas fa-minus"></i>`);
+                }
+            }
+
             updateTotalAmount();
 
         });

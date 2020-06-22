@@ -21,7 +21,7 @@ class ProductController extends Controller
     {
         $data = [
             'title_en' => 'Products',
-            'title_th' => 'สินค้า',
+            'title_th' => 'สินค้า'
         ];
         return view('products.index',$data);
     }

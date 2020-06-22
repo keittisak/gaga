@@ -2,6 +2,11 @@
 @section('title',$title_en)
 @section('css')
     {{--  Css  --}}
+    <style>
+        .dataTables_wrapper .dataTables_filter {
+            display: none;
+        }
+    </style>
 @endsection
 @section('content')
 <div class="page-header">
@@ -37,6 +42,7 @@
                         <th></th>
                     </thead>
                 </table>
+            </div>
         </div>
     </div>
 </div>
@@ -60,7 +66,7 @@
             ],
             paging:false,
             initComplete: function(){
-                $('.dataTables_filter').remove();
+                // $('.dataTables_filter').remove();
             },
             drawCallback: function (settings) {
                 if (!$dt.parent().hasClass("table-responsive")) {

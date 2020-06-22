@@ -25,14 +25,19 @@ Route::get('/layouts', function () {
     return view('layouts.app');
 });
 
-Route::get('orders', function () {
-    return view('orders.index');
-})->name('orders.index');
-
 //Order
+Route::get('/orders', 'OrderController@index')->name('orders.index');
+Route::get('/orders/data', 'OrderController@data')->name('orders.data');
+Route::get('/orders/overview', 'OrderController@overview')->name('orders.overview');
 Route::get('/orders/create', 'OrderController@create')->name('orders.create');
 Route::post('/orders', 'OrderController@store')->name('orders.store');
+Route::patch('/orders/change-status', 'OrderController@changeStatus')->name('orders.status');
+Route::get('/orders/print/label','OrderController@printLabel')->name('orders.print.label');
+Route::get('/orders/print/label/to-text','OrderController@labelToText')->name('orders.print.label.to_text');
+Route::get('/orders/print/list','OrderController@printList')->name('orders.print.list');
 Route::get('/orders/{id}/edit', 'OrderController@edit')->name('orders.edit');
+Route::put('/orders/{id}/update', 'OrderController@update')->name('orders.update');
+
 //Product
 Route::get('/products', 'ProductController@index')->name('products.index');
 Route::get('/products/data', 'ProductController@data')->name('products.data');
@@ -53,3 +58,12 @@ Route::get('/stocks/data', 'StockController@data')->name('stocks.data');
 Route::post('/stocks', 'StockController@store')->name('stocks.store');
 Route::put('/stocks/{id}', 'StockController@update')->name('stocks.update');
 Route::delete('/stocks/{id}', 'StockController@destroy')->name('stocks.destroy');
+
+//Dashboard
+Route::get('/dashboard', 'DashboardController@index')->name('dashboard.index');
+Route::get('/reset', function (){
+    Artisan::call('route:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('config:cache');
+});
