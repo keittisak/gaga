@@ -31,6 +31,7 @@ class CreateProductsTable extends Migration
             $table->integer('created_by')->unsigned()->nullable();
             $table->integer('updated_by')->unsigned()->nullable();
             $table->timestamps();
+            $table->softDeletes();
             // $table->index('slug');
         });
 
@@ -50,6 +51,7 @@ class CreateProductsTable extends Migration
             $table->integer('created_by')->unsigned()->nullable();
             $table->integer('updated_by')->unsigned()->nullable();
             $table->timestamps();
+            $table->softDeletes();
             // $table->primary('sku');
         });
 

@@ -26,9 +26,6 @@ class SkuController extends Controller
             'name' => [
                 'nullable'
             ],
-            'full_name' => [
-                'nullable'
-            ],
             'product_id' => [
                 'required',
                 'integer',
@@ -107,9 +104,6 @@ class SkuController extends Controller
             'name' => [
                 'nullable'
             ],
-            'full_name' => [
-                'nullable'
-            ],
             'product_id' => [
                 'required',
                 'integer',
@@ -166,7 +160,7 @@ class SkuController extends Controller
         return $sku;
     }
 
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
         $sku = Sku::findOrFail($id);
         DB::transaction(function() use($sku) {

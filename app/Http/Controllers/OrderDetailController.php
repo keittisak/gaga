@@ -151,6 +151,9 @@ class OrderDetailController extends Controller
                 'numeric',
                 'min:0'
             ],
+            'type' => [
+                'in:simple,variable,group'
+            ],
             'quantity' => [
                 'required',
                 'integer',

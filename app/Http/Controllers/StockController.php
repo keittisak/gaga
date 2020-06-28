@@ -15,28 +15,12 @@ class StockController extends Controller
 
     public function index (Request $request)
     {
-        $_request = new Request();
-        $data = $this->data($_request);
-        return view('stocks.index',[
-            'items' => $data->getData()
-        ]);
+        return view('stocks.index');
     }
 
     public function data (Request $request)
     {
-        $data = collect([]);
-        $products = Product::with(['skus'])->get()->toArray();
-        foreach($products as $key => $item)
-        {
-            foreach($item['skus'] as $index => $sku)
-            {
-                $stock = Stock::where('sku_id', $sku['id'])->first()->toArray();
-                $products[$key]['skus'][$index]['stock'] = $stock;
-            }
-            $data->push($products[$key]);
-            
-        }
-        return response()->json($data,200);
+        $data = Stock::with(['sku.product'])->get();
         return DataTables::of($data)->make(true);
     }
 

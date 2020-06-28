@@ -6,6 +6,9 @@
         .dataTables_wrapper .dataTables_filter {
             display: none;
         }
+        .custom-switch-input:checked ~ .custom-switch-indicator {
+            background: #5eba00;
+        }
     </style>
 @endsection
 @section('content')
@@ -15,9 +18,9 @@
     </h1>
 </div>
 <div class="row prompt-front">
-    <div class="col-12 px-0 mb-3">
+    <div class="col-12  mb-3">
         <div class="row gutters-xs">
-            <div class="col-4">
+            <div class="col-6">
                 <input type="text" class="form-control text-search" placeholder="ค้นหา ...">
             </div>
             <span class="col-auto">
@@ -30,7 +33,7 @@
     </div>
 </div>
 <div class="row prompt-front">
-    <div class="col-12 px-0">
+    <div class="col-12 ">
         <div class="card">
             <div class="table-responsive">
                 <table class="table card-table table-vcenter table-striped text-nowrap">
@@ -39,6 +42,7 @@
                         <th>รายละเอียด</th>
                         <th>ราคา</th>
                         <th>ปรเภท</th>
+                        <th class="w-20">สถานะ</th>
                         <th></th>
                     </thead>
                 </table>
@@ -62,9 +66,23 @@
                 { data: 'description', name: 'description' },
                 { data: 'price', name: 'price' },
                 { data: 'type', name: 'type' },
+                { data: 'status', name: 'status' },
                 { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center'}
             ],
             paging:false,
+            columnDefs : [
+                {
+                    targets:4,
+                    render: function (data, type, full, meta){
+                        var element = `<label class="custom-switch">
+                          <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input switch-status" data-id="${full.id}" ${(data=='active')?'checked':''}>
+                          <span class="custom-switch-indicator"></span>
+                          <span class="custom-switch-description">${data}</span>
+                        </label>`;
+                        return element;
+                    }
+                },
+            ],
             initComplete: function(){
                 // $('.dataTables_filter').remove();
             },
@@ -97,6 +115,35 @@
                 }
             });
         });
+
+        $(document).on('change','.switch-status',function(e){
+            var elementDescription = $(this).parent().find('.custom-switch-description');
+            var id = $(this).data('id');
+            var status = 'inactive';
+            if($(this).is(':checked')){
+                status = 'active';
+            }
+            var url = "{!! route('products.status','__id') !!}";
+            url = url.replace('__id',id);
+            $.ajax({
+                url:url,
+                type: 'POST',
+                dataType: "JSON",
+                data: {_token : '{{ csrf_token() }}', _method:'PATCH', status:status},
+                beforeSend: function( xhr ) {
+                    loader.init();
+                },
+            }).done(function(data){
+                elementDescription.html(status)
+                loader.close();
+            }).fail(function( jqxhr, textStatus ) {
+                loader.close();
+                Swal.fire({
+                    type: 'error',
+                    title: jqXHR.responseJSON.message
+                });
+            });
+        })
 
     });
 

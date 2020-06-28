@@ -6,6 +6,9 @@
         .dataTables_wrapper .dataTables_filter {
             display: none;
         }
+        .select2-selection__rendered{
+            text-align: center;
+        }
     </style>
 @endsection
 @section('content')
@@ -15,7 +18,7 @@
     </h1>
 </div>
 <div class="row row-cards prompt-front">
-    @foreach ($statusInfo as $status => $title)
+    @foreach ($statusInfo as $status => $item)
         <div class="col-6 col-sm-4 col-lg-2">
             <div class="card">
                 <div class="card-body p-3 text-center">
@@ -40,7 +43,7 @@
                     @endif
                     </div>
                 <div class="h1 m-0 overview-text-{{$status}}">43</div>
-                <div class="text-muted">{{ $title }}</div>
+                <div class="text-muted">{{ $item['title'] }}</div>
                 </div>
             </div>
         </div>
@@ -51,9 +54,9 @@
     <div class="col-12 col-md-12 col-lg-8 mb-5">
         <div class="row gutters-xs table-search">
             <div class="col">
-                <select class="form-control status" name="status" style="text-align-last: center">
-                    @foreach ($statusInfo as $status => $title)
-                    <option value="{{$status}}" @if(Request::get('scope') == $status) checked @endif>{{$title}}</option>
+                <select class="form-control status select2 prompt-front" name="status" style="text-align-last: center">
+                    @foreach ($statusInfo as $status => $item)
+                    <option value="{{$status}}" @if(Request::get('scope') == $status) checked @endif>{{$item['title']}}</option>
                     @endforeach
                 </select>
             </div>
@@ -91,9 +94,9 @@
     <div class="row d-md-none prompt-front">
         <div class="col-12 ">
             <div class="form-group">
-                <select class="form-control status" name="status" style="text-align-last: center">
-                    @foreach ($statusInfo as $status => $title)
-                    <option value="{{$status}}" @if(Request::get('scope') == $status) checked @endif>{{$title}}</option>
+                <select class="form-control status select2" name="status" style="text-align-last: center">
+                    @foreach ($statusInfo as $status => $item)
+                    <option value="{{$status}}" @if(Request::get('scope') == $status) checked @endif>{{$item['title']}}</option>
                     @endforeach
                 </select>
             </div>
@@ -117,9 +120,10 @@
             <div class="dropdown w-100">
                 <button data-toggle="dropdown" type="button" class="btn btn-outline-primary btn-block dropdown-toggle btn-change-status" aria-expanded="true">เปลี่ยนสถานะ</button>
                 <div class="dropdown-menu dropdown-menu-left dropdown-menu-arrow" x-placement="bottom-end" style="position: absolute; transform: translate3d(-56px, 32px, 0px); top: 0px; left: 0px; will-change: transform;">
-                    <a class="dropdown-item btn-change-status-items" data-status="draft">ร่าง</a>
-                    <a class="dropdown-item btn-change-status-items" data-status="unpaid">ยังไม่จ่าย</a>
-                    <a class="dropdown-item btn-change-status-items" data-status="shipped">ส่งแล้ว</a>
+                    @foreach ($statusInfo as $status => $item)
+                    <a class="dropdown-item btn-change-status-items" data-status="{{$status}}"><span class="{{$item['text_color']}} mr-3"><i class="{{$item['icon']}}"></i></span>{{$item['title']}}</a>
+                    @endforeach
+                    
                 </div>
             </div>
         </div>
@@ -127,8 +131,9 @@
             <div class="dropdown w-100">
                 <button data-toggle="dropdown" type="button" class="btn btn-outline-primary btn-block dropdown-toggle btn-print" aria-expanded="true">พิมพ์</button>
                 <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" x-placement="bottom-end" style="position: absolute; transform: translate3d(-56px, 32px, 0px); top: 0px; left: 0px; will-change: transform;">
-                    <a class="dropdown-item btn-print-items" data-type="label">ใบปะหน้ากล่อง</a>
-                    <a class="dropdown-item btn-print-items" data-type="list">รายการแพ็คของ</a>
+                    <a class="dropdown-item btn-print-items" data-type="label"><span class="text-primary mr-3"><i class="fas fa-tag"></i></span>{{ __('ใบปะหน้ากล่อง 1') }}</a>
+                    <a class="dropdown-item btn-print-items" data-type="label"><span class="text-primary mr-3"><i class="fas fa-tag"></i></span>{{ __('ใบปะหน้ากล่อง 2') }}</a>
+                    <a class="dropdown-item btn-print-items" data-type="list"><span class="text-info mr-3"><i class="far fa-list-alt"></i></span>{{ __('รายการแพ็คของ') }}</a>
                 </div>
             </div>
         </div>
@@ -138,7 +143,7 @@
     <div class="col-12">
         <div class="card">
             <div class="table-responsive">
-                <table class="table card-table table-vcenter text-nowrap">
+                <table class="table card-table table-vcenter text-nowrap" id="table-order">
                     <thead>
                     <tr>
                         <th class="w-1">
@@ -208,7 +213,7 @@
         </div>
     </div>
 </div>
-
+@include('orders.include.detail_modal')
 @endsection
 @section('js')
 <script>
@@ -216,7 +221,9 @@
     var $_status = 'draft';
     var $_paging = false;
     var $_showCheckbox = true;
-    require(['jquery', 'datatables','datepicker','sweetAlert'], function($, datatable, datepicker, Swal) {
+    require(['jquery', 'datatables','datepicker','sweetAlert','selectize','select2'], function($, datatable, datepicker, Swal,selectize,select2) {
+        $('.select2').select2();
+        $('.selectize').selectize();
         $('.datepicker').datepicker({
             autoclose:true,
             format:'dd/mm/yyyy',
@@ -243,7 +250,7 @@
             });
         }
 
-        $dt = $('.table');
+        $dt = $('#table-order');
         tableSetting = {
             processing: true,
             serverSide: true,
@@ -277,6 +284,12 @@
                 {
                     targets: 0,
                     visible: $_showCheckbox,
+                },
+                {
+                    targets:1,
+                    render: function (data, type, full, meta){
+                        return `<button class="btn btn-link pl-0 show-details" data-id='${full.id}'>${data}</button>`;
+                    }
                 },
                 {
                     targets: 3,
@@ -350,6 +363,47 @@
             table = $dt.DataTable(tableSetting);
 
         });
+
+        $(document).on('click', '.show-details', function(e){
+            var orderId = $(this).data('id');
+            var _url = "{{ route('orders.by.id','__id') }}"
+            _url = _url.replace('__id', orderId)
+            $.ajax({
+                url: _url,
+                beforeSend: function( xhr ) {
+                        loader.init();
+                    },
+            }).done(function(data){
+                var code =data.code;
+                $('#detailsModalLabel').text(code.toUpperCase());
+                var $tableDetails = $('#table-details');
+                var elementItem = ``;
+                $.each(data.details, function(key, item){
+                    elementItem+= `<tr><td>${item.full_name}</td><td class="text-right">${item.quantity}</td><td class='text-right'>${item.total_amount}</td></tr>`;
+                });
+                $('#customer-fullname').html(data.shipping_full_name);
+                $('#customer-address').html(data.shipping_full_address);
+                $tableDetails.find('tbody').html(elementItem);
+                $tableDetails.find('.total-amount').html(data.total_amount);
+                $tableDetails.find('.shipping-fee').html(data.shipping_fee);
+                $tableDetails.find('.discount-amount').html(data.discount_amount);
+                $tableDetails.find('.net-total-amount strong').html(data.net_total_amount);
+                $('.detail-transfered-at strong').html(`เวลาโอนเงิน: ${data.payments[0].transfered_at}`);
+                $('.detail-slip-image').attr('href',data.payments[0].image);
+                $('.detail-created-at').html(`${data.created_at} ${(data.created_by)?data.created_by.name:""}`);
+                var urlEditOrder = "{{ route('orders.edit', '__id') }}";
+                urlEditOrder  = urlEditOrder.replace('__id',data.id);
+                $('.btn-edit-order').attr('href',urlEditOrder);
+                $('#detailsModal').modal('show');
+                loader.close();
+            }).fail(function(jqXHR, textStatus, $form) {
+                loader.close();
+                Swal.fire({
+                    type: 'error',
+                    title: jqXHR.responseJSON.message
+                });
+            });
+        })
 
         $('.btn-search').on('click',function(e){
             var text = $(this).parent().closest('.table-search').find('.text-search');

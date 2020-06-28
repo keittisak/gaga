@@ -28,6 +28,7 @@ Route::get('/layouts', function () {
 //Order
 Route::get('/orders', 'OrderController@index')->name('orders.index');
 Route::get('/orders/data', 'OrderController@data')->name('orders.data');
+Route::get('/orders/data/{id}', 'OrderController@getOrderById')->name('orders.by.id');
 Route::get('/orders/overview', 'OrderController@overview')->name('orders.overview');
 Route::get('/orders/create', 'OrderController@create')->name('orders.create');
 Route::post('/orders', 'OrderController@store')->name('orders.store');
@@ -46,6 +47,7 @@ Route::post('/products', 'ProductController@store')->name('products.store');
 Route::get('/products/{id}', 'ProductController@show')->name('products.show');
 Route::get('/products/{id}/edit', 'ProductController@edit')->name('products.edit');
 Route::put('/products/{id}', 'ProductController@update')->name('products.update');
+Route::patch('/products/{id}', 'ProductController@changeStatus')->name('products.status');
 Route::delete('/products/{id}', 'ProductController@destroy')->name('products.delete');
 //Customer
 Route::get('/customers', 'CustomerController@index')->name('customers.index');
@@ -61,6 +63,10 @@ Route::delete('/stocks/{id}', 'StockController@destroy')->name('stocks.destroy')
 
 //Dashboard
 Route::get('/dashboard', 'DashboardController@index')->name('dashboard.index');
+
+//Customer Portal
+Route::get('/customer-portal/{id}', 'CustomerPortalController@index')->name('customerportal.index');
+
 Route::get('/reset', function (){
     Artisan::call('route:clear');
     Artisan::call('cache:clear');

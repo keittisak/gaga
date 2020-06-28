@@ -34,8 +34,8 @@ class ProductController extends Controller
                 return $product->skus[0]->price;
             })
             ->addColumn('action', function($product) {
-                return '<a href="'.route('products.edit', $product->id).'" class="btn btn-link btn-sm"><i class="far fa-edit"></i></a>
-                        <button type="button" class="btn btn-link btn-sm btnDelete" data-id="'.$product->id.'"><i class="far fa-trash-alt"></i></button>';
+                return '<a href="'.route('products.edit', $product->id).'" class="btn btn-secondary btn-sm mr-2"><i class="far fa-edit"></i></a>
+                        <button type="button" class="btn btn-secondary btn-sm btnDelete" data-id="'.$product->id.'"><i class="far fa-trash-alt"></i></button>';
             })
             ->rawColumns(['checkbox','action'])
         ->make(true);
@@ -146,7 +146,6 @@ class ProductController extends Controller
                     if(isset($data['active'])){
                         $_request = new Request();
                         $data['product_id'] = $product->id;
-                        $data['full_name'] = $product->name.' ('.$data['name'].')';
                         $_request->merge($data);
                         if (isset($request->user()->id)){
                             $_request->merge(['created_by' => $request->user()->id, 'updated_by' => $request->user()->id]);
@@ -201,10 +200,7 @@ class ProductController extends Controller
                 // }
             }else if($request->type == 'simple'){
                 $_request = new Request();
-                $sku = $counter->generateCode('sku',0,3);
-                $data['sku'] = $sku;
                 $data['product_id'] = $product->id;
-                $data['full_name'] = $product->name.' ('.$data['name'].')';
                 $data['price'] = $request->price;
                 $data['full_price'] = $request->full_price;
                 $data['cost'] = $request->cost;
@@ -268,9 +264,6 @@ class ProductController extends Controller
         }else{
             $request->merge(array('type' => 'simple'));
         }
-
-        $request->merge(array('status' => 'active'));
-
         $validate = [
             'slug' => [
                 // 'required',
@@ -337,48 +330,45 @@ class ProductController extends Controller
                 $productSkus = [];
                 foreach($request->skus as $key => $data){
                     $_request = new Request();
-                    if(isset($data['active'])){
-                        $data['product_id'] = $product->id;
-                        $data['full_name'] = $product->name.' ('.$data['name'].')';
-                        if(empty($data['sku'])){
-                            if (isset($request->user()->id)){
-                                $_request->merge(['created_by' => $request->user()->id, 'updated_by' => $request->user()->id]);
-                            }
-                            $sku = $counter->generateCode('sku',0,3);
-                            $data['sku'] = $sku;
-                            $_request->merge($data);
-                            $sku = (new SkuController)->store($_request);
-                            $productSkus[] = $sku->sku;
-                        }else{
-                            if (isset($request->user()->id)){
-                                $_request->merge(['updated_by' => $request->user()->id]);
-                            }
-                            $_request->merge($data);
-                            $sku = (new SkuController)->update($_request, $data['sku']);
-                            $productSkus[] = $sku->sku;
+                    $data['product_id'] = $product->id;
+                    $data['status'] = 'active';
+                    if(!isset($data['active'])){ $data['status'] = 'inactive'; }
+                    if(empty($data['id'])){
+                        if (isset($request->user()->id)){
+                            $_request->merge(['created_by' => $request->user()->id, 'updated_by' => $request->user()->id]);
                         }
+                        $_request->merge($data);
+                        $sku = (new SkuController)->store($_request);
+                        $productSkuIds[] = $sku->id;
+                    }else{
+                        if (isset($request->user()->id)){
+                            $_request->merge(['updated_by' => $request->user()->id]);
+                        }
+                        $_request->merge($data);
+                        $sku = (new SkuController)->update($_request, $data['id']);
+                        $productSkuIds[] = $sku->id;
                     }
+                    
                 }
-                $skus = $product->skus()->whereNotIn('sku', $productSkus)->get();
+                $skus = $product->skus()->whereNotIn('id', $productSkuIds)->get();
                 foreach ($skus as $item){
                     $_request = new Request();
-                    (new SkuController)->destroy($item->sku);
+                    (new SkuController)->destroy($item->id);
                 }
 
             }else if($request->type == 'simple'){
                 $_request = new Request();
                 $data['product_id'] = $product->id;
-                $data['full_name'] = $product->name.' ('.$data['name'].')';
                 $data['price'] = $request->price;
                 $data['full_price'] = $request->full_price;
                 $data['cost'] = $request->cost;
                 $data['call_unit'] = $request->call_unit;
                 $_request->merge($data);
-                (new SkuController)->update($_request, $request->sku);
-                $skus = $product->skus()->whereNotIn('sku', [$request->sku])->get();
+                (new SkuController)->update($_request, $request->sku_id);
+                $skus = $product->skus()->whereNotIn('id', [$request->sku_id])->get();
                 foreach ($skus as $item){
                     $_request = new Request();
-                    (new SkuController)->destroy($item->sku);
+                    (new SkuController)->destroy($item->id);
                 }
             }
             return $result;
@@ -399,11 +389,40 @@ class ProductController extends Controller
             $skus = $product->skus()->get();
             foreach($skus as $item)
             {
-                (new SkuController)->destroy($item->sku);
+                (new SkuController)->destroy($item->id);
             }
             $product->delete();
             
         });
         return response('','204');
+    }
+
+    public function changeStatus (Request $request, int $id)
+    {
+        $product = Product::findOrFail($id);
+        if (isset($request->user()->id)){
+            if (empty($request->updated_by)) { $request->merge(array('updated_by' => $request->user()->id)); }
+        }
+        $validate = [
+            'status' => [
+                'required',
+                'in:active,inactive'
+            ],
+            'updated_by' => [
+                'integer'
+            ]
+        ];
+        $request->validate($validate);
+        $data = array_only($request->all(), array_keys($validate));
+        try{
+            $product = DB::transaction(function() use($request, $product, $data) {
+                $currentStatus = $product->status;
+                $product->update($data);
+                return $product;
+            });
+            return response()->json(["message" => "Product is updated success."], 200);
+        } catch (\Exception $e) {   
+            return response()->json(["message" => $e->getMessage()], 500);
+        }
     }
 }

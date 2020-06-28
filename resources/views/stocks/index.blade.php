@@ -39,20 +39,20 @@
                             <th class="w-1"></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach($items as $key => $item)
-                            @foreach($item->skus as $index => $sku)
+                    {{-- <tbody>
+                        @foreach($products as $key => $product)
+                            @foreach($product->skus as $index => $sku)
                             <tr>
-                                <td>{{$sku->full_name}}</td>
+                                <td>{{$product->name.' '.$sku->name}}</td>
                                 <td class="text-right">{{number_format($sku->price,2)}}</td>
                                 <td class="text-right">{{number_format($sku->stock->available)}}</td>
                                 <td class="text-right">{{number_format($sku->stock->draft)}}</td>
                                 <td class="text-right">{{number_format($sku->stock->onhand)}}</td>
-                                <td class="text-center"><button type="button" class="btn btn-link btn-sm btn-edit" data-sku-name="{{$sku->full_name}}" data-stock="{{json_encode($sku->stock)}}"><i class="far fa-edit"></i></button></td>
+                                <td class="text-center"><button type="button" class="btn btn-link btn-sm btn-edit" data-sku-name="{{$product->name.' '.$sku->name}}" data-stock="{{json_encode($sku->stock)}}"><i class="far fa-edit"></i></button></td>
                             </tr>
                             @endforeach
                         @endforeach
-                    </tbody>
+                    </tbody> --}}
                 </table>
             </div>
         </div>
@@ -90,10 +90,10 @@
                     <div class="col-12 mt-2">
                         <div class="row">
                             <div class="col-6">
-                                <button type="button" class="btn btn-primary btn-block btn-action" data-type="set" data-available="1" data-id=""><i class="far fa-edit mr-2"></i> ปรับจำนวน</button>
+                                <button type="button" class="btn btn-outline-primary btn-block btn-action" data-type="add" data-available="1" data-id=""><i class="fas fa-plus mr-2"></i> เพิ่มจำนวน</button>
                             </div>
                             <div class="col-6">
-                                <button type="button" class="btn btn-primary btn-block btn-action" data-type="add" data-available="1" data-id=""><i class="fas fa-plus mr-2"></i> เพิ่มจำนวน</button>
+                                <button type="button" class="btn btn-outline-primary btn-block btn-action" data-type="set" data-available="1" data-id=""><i class="far fa-edit mr-2"></i> ปรับจำนวน</button>
                             </div>
                         </div>
                     </div>
@@ -135,10 +135,64 @@
 <script>
     var table;
     require(['datatables', 'jquery'], function(datatable, $) {
+            function pricceFormat(text) {
+                return text.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+            }
             $dt = $('#table');
             table = $dt.DataTable({
+                processing: true,
+                serverSide: true,
+                ajax:{
+                    url:"{!! route('stocks.data') !!}",
+                },
+                columns: [
+                    { data: 'id', name: 'id' },
+                    { data: 'sku.price', name: 'sku.price',className:'text-right',},
+                    { data: 'available', name: 'available',className:'text-right', },
+                    { data: 'draft', name: 'draft',className:'text-right', },
+                    { data: 'onhand', name: 'onhand',className:'text-right', },
+                    { data: 'id', name: 'id',className:'text-center', },
+                ],
                 paging:false,
                 // searching:false,
+                columnDefs : [
+                    {
+                        targets:0,
+                        render: function (data, type, full, meta){
+                            return full.sku.product.name+' '+full.sku.name
+                        }
+                    },
+                    {
+                        targets:2,
+                        render: function (data, type, full, meta){
+                            return pricceFormat(data)
+                        }
+                    },
+                    {
+                        targets:3,
+                        render: function (data, type, full, meta){
+                            return pricceFormat(data)
+                        }
+                    },
+                    {
+                        targets:4,
+                        render: function (data, type, full, meta){
+                            return pricceFormat(data)
+                        }
+                    },
+                    {
+                        targets:1,
+                        render: function (data, type, full, meta){
+                            return pricceFormat(data)
+                        }
+                    },
+                    {
+                        targets:5,
+                        render: function (data, type, full, meta){
+                            return `<button type="button" class="btn btn-secondary btn-sm btn-edit" data-stock='${JSON.stringify(full)}'><i class="far fa-edit"></i></button>`;
+                        }
+                    }
+                ],
                 initComplete: function(){
                     $('.dataTables_filter').remove();
                 },
@@ -154,11 +208,11 @@
                 table.search(text).draw();
             });
 
-            $('.btn-edit').on('click',function(e){
+            $(document).on('click','.btn-edit',function(e){
                 var stock = $(this).data('stock');
-                var name = $(this).data('sku-name');
+                var name = stock.sku.product.name+' '+stock.sku.name
                 $('.modal-title').html('#'+name);
-
+                $(this).prop('disabled',false);
                 $('.btn-action').attr('data-available', stock.available);
                 $('.btn-action').attr('data-id', stock.id);
                 $('.btn-action').attr('data-sku-id', stock.sku_id);
@@ -205,6 +259,7 @@
             });
 
             $('.btn-submit').on('click',function(e){
+                // $(this).prop('disabled',true);
                 var id = $('#form-stock-update').find('input[name=id]').val();
                 var sku_id = $('#form-stock-update').find('input[name=sku_id]').val();
                 var action = $('#form-stock-update').find('input[name=action]').val();
@@ -218,11 +273,21 @@
                     dataType:'json',
                     data: {_token:'{{ csrf_token() }}', _method:'put', id:id, sku_id:sku_id, action:action, quantity:quantity, remark:remark },
                     beforeSend: function() {
+                        loader.init();
                     }
                 }).done(function(data, textStatus, jqXHR) {
-
+                    $('#editModal').modal('hide');
+                    $('#form-stock-update').hide();
+                    // location.reload();
+                    table.draw();
+                    loader.close();
                 }).fail(function(jqXHR, textStatus) {
-
+                    // $(this).prop('disabled',false);
+                    loader.close();
+                    Swal.fire({
+                        type: 'error',
+                        title: jqXHR.responseJSON.message
+                    });
                 })
             });
     });

@@ -99,11 +99,13 @@
                                     <label class="form-label">{{ $item->product->name }}</label>
                                     <input type="hidden" name="details[{{$key}}][product_id]" value="{{ $item->product->id }}">
                                         <input type="hidden" name="details[{{$key}}][product_name]" value="{{ $item->product->name }}">
-                                    <select name="details[{{$key}}][sku_id]" id="" class="form-control font-italic {{ ($item->product->type == 'simple')?'d-none':'' }}">
-                                            @foreach ($item->product->skus as $sku)
-                                                <option value="{{$sku->id}}" {{ ($item->sku_id == $sku->id)? 'selected':'' }}>{{$sku->name.' - '.$sku->price}}</option>
-                                            @endforeach
-                                        </select>
+                                    @if($item->product->type != 'simple')
+                                    <select name="details[{{$key}}][sku_id]" id="" class="form-control font-italic select2 {{ ($item->product->type == 'simple')?'d-none':'' }}">
+                                        @foreach ($item->product->skus as $sku)
+                                            <option value="{{$sku->id}}" {{ ($item->sku_id == $sku->id)? 'selected':'' }}>{{$sku->name.' - '.$sku->price}}</option>
+                                        @endforeach
+                                    </select>
+                                    @endif
                                     </div>
                                 </div>
                                 <div class="col-md-3 offset-md-3 offset-1 col-5">
@@ -315,38 +317,54 @@
 @endsection
 @section('js')
 <script>
-    require(['jquery', 'selectize', 'datatables','jqueryForm', 'datepicker','sweetAlert'], function ($, selectize, $datatable,form, datepicker,Swal) {
+    require(['jquery', 'selectize', 'datatables','jqueryForm', 'datepicker','sweetAlert','select2'], function ($, selectize, $datatable,form, datepicker,Swal,select2) {
+        $('.select2').select2();
+        @if($order->shipping_subdistrict_id)
         $(function(){
             $.ajax({
                 url: '{{ asset("assets/json/subdistrict.json") }}',
                 dataType: 'json',
-                success: function(data) {
-                    var selected = '';
-                    $('#shipping_subdistrict').append('<option value=""></option>');
-                    for (var i in data) {
-                        $('#shipping_subdistrict').append(`<option value="${i}">${data[i].name}</option>`);
-                    }
-                }
             }).done(function( data ) {
-                $select = $('#shipping_subdistrict').selectize({
-                    onChange:function(val){
-                        var data = this.options[val];
-                        $('input[name=shipping_subdistrict_id]').val('');
-                        $('input[name=shipping_subdistrict_name]').val('');
-                        if(data !== undefined){
-                            $('input[name=shipping_subdistrict_id]').val(val);
-                            $('input[name=shipping_subdistrict_name]').val(data.text);
-                        }
-                        
-                    }
+                var subdistrictId = {!! $order->shipping_subdistrict_id !!};
+                data = data[subdistrictId];
+                $('#shipping_subdistrict').select2({
+                    data :[{ 
+                            id: subdistrictId, 
+                            text: data.name,
+                            selected: true
+                        }]
                 });
-
-                @if($order->shipping_subdistrict_id)
-                var selectize = $select[0].selectize;
-                selectize.setValue({!!$order->shipping_subdistrict_id!!});
-                @endif
-
             });
+        });
+        @endif
+
+        $('#shipping_subdistrict').select2({
+            ajax:{
+                url: '{{ asset("assets/json/subdistrict.json") }}',
+                dataType:"json",
+                delay: 250,
+                data: function (params) {
+                    var data = {
+                        q:params.term,
+                    }
+                    return data
+                },
+                processResults: function (data, params) {
+                    if(params.term){
+                        data = data.filter(function(item,key){
+                            return item.name.indexOf(params.term) > -1
+                        })
+                    }
+                    return {
+                        results: $.map(data, function (item,key) {
+                            return {
+                                text: item.name,
+                                id: key,
+                            }
+                        })
+                    };
+                }
+            }
         });
 
         $('#date_transfer').datepicker({
@@ -455,7 +473,7 @@
             if(product.type == 'simple'){
                 display_none = 'd-none'
             }
-            select_sku += `<select name="details[${index}][sku_id]" id="" class="form-control font-italic ${display_none}">`;
+            select_sku += `<select name="details[${index}][sku_id]" id="" class="form-control font-italic select2 ${display_none}">`;
             for(i = 0; i < skus.length; i++)
             {
                 select_sku += `<option value="${skus[i].id}">${skus[i].name} - ${skus[i].price}</option>`
@@ -494,6 +512,7 @@
                         </div>
                         <br>`;
             $('.detail-display').append(element);
+            $('.select2').select2();
             updateTotalAmount();
             $('#product-modal').modal('hide');
         });

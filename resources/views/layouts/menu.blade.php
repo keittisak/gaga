@@ -12,10 +12,15 @@
         <div class="col-lg order-lg-first">
           <ul class="nav nav-tabs border-0 flex-column flex-lg-row prompt-front">
             <li class="nav-item">
-              <a href="#" class="nav-link"><i class="fe fe-home"></i> หน้าแรก</a>
+              <a href="{{ route('dashboard.index') }}" class="nav-link"><i class="fe fe-home"></i> หน้าแรก</a>
             </li>
             <li class="nav-item">
-              <a href="{{ route('orders.index') }}" class="nav-link"><i class="fe fe-home"></i> คำสั่งซื้อ</a>
+              <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-file"></i> ออเดอร์</a>
+              <div class="dropdown-menu dropdown-menu-arrow">
+                <a href="{{ route('orders.create') }}" class="dropdown-item ">สร้างออเดอร์</a>
+                <a href="{{ route('orders.index') }}" class="dropdown-item ">จัดการออเดอร์</a>
+                <a href="{{ route('orders.index') }}" class="dropdown-item ">ประวัติออเดอร์</a>
+              </div>
             </li>
             <li class="nav-item dropdown">
               <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-file"></i> จัดการสินค้า</a>
@@ -24,9 +29,6 @@
                 <a href="{{ route('stocks.index') }}" class="dropdown-item ">คลังสินค้า</a>
               </div>
             </li>
-            <li class="nav-item dropdown">
-                <a href="#" class="nav-link"><i class="fe fe-check-square"></i> ลูกค้า</a>
-              </li>
             <li class="nav-item dropdown">
               <a href="#" class="nav-link"><i class="fe fe-check-square"></i> รายงาน</a>
             </li>

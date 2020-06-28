@@ -21,12 +21,12 @@ class OrderController extends Controller
             'title_eng' => 'Orders',
             'title_th' => 'คำสั่งซื้อ',
             'statusInfo' => [
-                'draft' => 'ร่าง',
-                'unpaid' => 'ยังไม่จ่าย',
-                'transfered' => 'โอนแล้ว',
-                'packing' => 'กำลังแพ็ค',
-                'paid' => 'เตรียมส่ง',
-                'shipped' => 'ส่งแล้ว',
+                'draft' => ['title' => 'ร่าง', 'icon' => 'fas fa-inbox', 'text_color' => 'text-blue'],
+                'unpaid' => ['title' => 'ยังไม่จ่าย', 'icon' => 'far fa-times-circle', 'text_color' => 'text-red'],
+                'transfered' => ['title' => 'โอนแล้ว', 'icon' => 'far fa-check-circle', 'text_color' => 'text-green'],
+                'packing' => ['title' => 'กำลังแพ็ค', 'icon' => 'fas fa-tape', 'text_color' => 'text-info'],
+                'paid' => ['title' => 'เตรียมส่ง', 'icon' => 'fas fa-archive', 'text_color' => 'text-muted'],
+                'shipped' => ['title' => 'ส่งแล้ว', 'icon' => 'fas fa-shipping-fast', 'text_color' => 'text-success'],
                 // 'voided' =>'ยกเลิก'
             ]
         ];
@@ -81,6 +81,14 @@ class OrderController extends Controller
                 ->make(true);
     }
 
+    public function getOrderById(Request $request, int $id){
+        $order = Order::with(['details','payments'])->find($id);
+        if(!$order){
+            return abort(404);
+        }
+        return $order;
+    }
+
     public function overview(Request $request)
     {
         $orders = Order::select([
@@ -114,7 +122,7 @@ class OrderController extends Controller
             'action' => 'create',
             'title_en' => 'Add Order',
             'title_th' => 'เพิ่มคำสั่งซื้อ',
-            'products' => Product::with(['skus'])->get(),
+            'products' => Product::with(['skus'])->where('status','active')->get(),
             'order' => $order
         ];
         return view('orders.form', $data);

@@ -34,6 +34,10 @@
 
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweet-alert2/sweet-alert2.min.css') }}">
     <script src="{{ asset('assets/plugins/sweet-alert2/plugin.js') }}"></script>
+    <!-- Select2 Plugin -->
+    <link href="{{ asset('assets/plugins/select2/select2.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/plugins/select2-bootstrap4/select2-bootstrap4.min.css') }}" rel="stylesheet" />
+    <script src="{{ asset('assets/plugins/select2/plugin.js') }}"></script>
 
     <!-- Date Picker -->
     <link rel="stylesheet" href="{{ asset('assets/plugins/datepicker/datepicker3.css') }}">
@@ -59,6 +63,22 @@
         height: 100%;
         z-index:99999;
         
+    }
+    .select2-container--default .select2-selection--single{
+        border: 1px solid rgba(0, 40, 100, 0.12);
+        border-radius: 3px;
+        height: 2.375rem;
+        padding: 0.375rem 0.75rem;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        top:7px;
+    }
+    .select2-container--default .select2-search--dropdown .select2-search__field{
+        border: 1px solid rgba(0, 40, 100, 0.12);
+        border-radius: 2px;
+    }
+    .select2-results {
+        font-family: 'Kanit', 'Prompt', 'Athiti', sans-serif;
     }
 </style>
 <body>
@@ -97,7 +117,11 @@
                 reader.readAsDataURL(input.files[0]);
             }
       }
-
+      pricceFormat = {
+        init: function(data){
+            return text.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        }
+    }
     loader = {
         init: function(e){
             let loading = `

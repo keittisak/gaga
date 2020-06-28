@@ -141,7 +141,8 @@
                                         <th><small>ราคา</small></th>
                                         <th><small>ราเต็ม</small></th>
                                         <th><small>ต้นทุน</small></th>
-                                        <th><small>น้ำหนัก (กก.)</small></th>
+                                        <th class="w-1"><small>น้ำหนัก (กก.)</small></th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -150,11 +151,11 @@
                                         <tr>
                                             <td class="">
                                                 <label class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input" name="skus[{{$key}}][active]" value="1" checked>
+                                                    <input type="checkbox" class="custom-control-input" name="skus[{{$key}}][active]" value="1" @if($item->status =='active') checked @endif>
                                                     <span class="custom-control-label"></span>
                                             </label></td>
                                             <td>
-                                                <input type="hidden" class="form-control" name="skus[{{$key}}][sku]" value="{{$item->sku}}">
+                                                <input type="hidden" class="form-control" name="skus[{{$key}}][id]" value="{{$item->id}}">
                                                 <input type="text" class="form-control" name="skus[{{$key}}][name]" value="{{$item->name}}">
                                             </td>
                                             
@@ -170,10 +171,20 @@
                                             <td>
                                                 <input type="text" class="form-control variable-call_unit" name="skus[{{$key}}][call_unit]" value="{{$item->call_unit}}">
                                             </td>
+                                            <td>
+                                                <button type="button" class="btn  btn-sm btn-delete-sku" ><i class="fas fa-times"></i></button>
+                                            </td>
                                         </tr>
                                         @endforeach
                                     @endif
                                 </tbody>
+                                @if($action != 'create')
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="6" class="text-center pb-0"><button type="button" class="btn btn-primary btn-add-sku">เพิ่มแบบสินค้า</button></td>
+                                    </tr>
+                                </tfoot>
+                                @endif
                             </table>
                         </div>
                     </div>
@@ -183,7 +194,7 @@
                     <div class="form-group">
                         <label class="form-label">ราคาสินค้า <span class="form-required">*</span></label>
                         <div class="col-md-4 col-12 pl-0">
-                            <input type="hidden" class="form-control" name="sku" value="{{isset($product->skus[0])?$product->skus[0]->sku:''}}">
+                            <input type="hidden" class="form-control" name="sku_id" value="{{isset($product->skus[0])?$product->skus[0]->id:''}}">
                             <input type="text" class="form-control" name="price" value="{{isset($product->skus[0])?$product->skus[0]->price:''}}">
                         </div>
                     </div>
@@ -210,7 +221,7 @@
                 </div>
             </div>
             <div class="card-footer">
-                <button class="btn btn-pill btn-danger float-left">ยกเลิก</button>
+                <a href="{{ route('products.index') }}" class="btn btn-pill btn-danger float-left">ยกเลิก</a>
                 <button type="submit" class="btn btn-pill btn-primary float-right">บันทึก</button>
             </div>
         </form>
@@ -343,29 +354,68 @@
         if(cost){$('#table-product-skus tbody').find('.variable-cost').val(cost)}
     });
 
+    $(document).on('click', '.btn-delete-sku',function(e){
+        $(this).closest('tr').remove();
+    });
+
+    $('.btn-add-sku').on('click',function(e){
+        var tr = $('#table-product-skus tbody tr');
+        var i = tr.length +1;
+        var element_option_sku = ``;
+        element_option_sku += `<tr>
+                                        <td class="">
+                                            <label class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" name="skus[${i}][active]" value="1" checked>
+                                                <span class="custom-control-label"></span>
+                                        </label></td>
+                                        <td>
+                                            <input type="text" class="form-control" name="skus[${i}][name]" value="">
+                                        </td>
+                                        
+                                        <td>
+                                            <input type="text" class="form-control variable-price" name="skus[${i}][price]">
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control variable-full_price" name="skus[${i}][full_price]">
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control variable-cost" name="skus[${i}][cost]">
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control variable-call_unit" name="skus[${i}][call_unit]">
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn  btn-sm btn-delete-sku" ><i class="fas fa-times"></i></button>
+                                        </td>
+                                    </tr>`
+        $('#table-product-skus tbody').append(`${element_option_sku}`);
+    });
+
         $('form').ajaxForm({
             dataType: 'json',
             beforeSubmit: function (arr, $form, options) {
-                $('.card-body').find('.dimmer').addClass('active');
-                $('button[type=submit]').prop('disabled',true);
-                // $('body').append('<div class="preloader"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>');
+                loader.init();
             },
             success: function (res) {
+                loader.close();
                 Swal.fire({
                     type: "success",
                     title: "บันทึกข้อมูลเรียบร้อย", 
                 }).then(function(){
+                    @if($action != "update")
                     window.location.replace('{{ route('products.index') }}');
+                    @endif
                 });
+                
             },
             error: function (jqXHR, status, options, $form) {
-                $('.card-body').find('.dimmer').removeClass('active');
-                $('button[type=submit]').prop('disabled',false);
-                
+                // $('.card-body').find('.dimmer').removeClass('active');
+                // $('button[type=submit]').prop('disabled',false);
+                loader.close();
                 if(jqXHR.status === 422){
                     Swal.fire({
                         type: 'error',
-                        title: 'ข้อมูลที่ระบุไม่ถูกต้อง'
+                        title: 'ระบุข้อมูลไม่ถูกต้อง'
                     });
                 }else{
                     Swal.fire({
@@ -373,6 +423,7 @@
                         title: jqXHR.responseJSON.message
                     });
                 }
+                
             }
         });
     });
