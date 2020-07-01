@@ -384,7 +384,7 @@
         $('#date_transfer').datepicker({
             autoclose:true,
             format:'dd/mm/yyyy',
-            language:'th',
+            // language:'th',
             setDate: new Date()
         });
         $('#btn-search-phone').on('click',function(e){
