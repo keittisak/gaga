@@ -278,11 +278,11 @@
 
 
 <div class="btn-list text-center prompt-front">
-    @if(in_array($order->status,['draft', 'unpaid', 'transfered']))
+    @if(!in_array($order->status,['paid', 'shipped', 'voided']))
     <button type="button" class="btn btn-pill btn-primary btn-lg btn-save" value="save">บันทึกคำสั่งซื้อ</button>
     <button class="btn btn-pill btn-secondary btn-lg btn-save" value="save_and_new">บันทึกคำสั่งซื้อและเพิ่ม</button>
     @else 
-    <a href="{{route('orders.index')}}" class="btn btn-pill btn-primary btn-lg btn-save">กลับ</button>
+    <a href="{{route('orders.index')}}" class="btn btn-pill btn-primary btn-lg btn-save">กลับ</a>
     @endif
 </div>
 </form>
