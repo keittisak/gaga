@@ -529,7 +529,7 @@
                         </div>
                         <br>`;
             $('.detail-display').append(element);
-            $('.select2').select2();
+            if(product.type == 'simple'){$('.select2').select2();}
             updateTotalAmount();
             $('#product-modal').modal('hide');
         });
