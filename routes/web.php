@@ -81,3 +81,7 @@ Route::get('/reset', function (){
     Artisan::call('config:clear');
     Artisan::call('config:cache');
 });
+
+Route::get('/key-generate', function (){
+    Artisan::call('key:generate');
+});
