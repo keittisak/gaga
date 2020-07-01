@@ -68,6 +68,9 @@ Route::get('/stock-movement/data', 'StockMovementController@data')->name('stock.
 
 //Dashboard
 Route::get('/dashboard', 'DashboardController@index')->name('dashboard.index');
+Route::post('/dashboard/data/sales-by-product', 'DashboardController@SalesByProduct')->name('dashboard.data.sales-by-product');
+Route::post('/dashboard/data/order-by-status-total', 'DashboardController@orderByStatusTotal')->name('dashboard.data.order-by-status-total');
+Route::post('/dashboard/data/sale-by-channel', 'DashboardController@saleByChannel')->name('dashboard.data.sale-by-channel');
 
 //Customer Portal
 Route::get('/customer-portal/{id}', 'CustomerPortalController@index')->name('customerportal.index');

@@ -23,6 +23,7 @@
             <div class="col-12 mb-4">
                 <button class="btn btn-secondary btn-express-date w-9" data-type="today">วันนี้</button>
                 <button class="btn btn-secondary btn-express-date w-9" data-type="yesterday">เมื่อวาน</button>
+                <button class="btn btn-secondary btn-express-date w-9" data-type="seven_day">7 วัน</button>
                 <button class="btn btn-secondary btn-express-date w-9" data-type="this_month">เดือนนี้</button>
                 <button class="btn btn-secondary btn-express-date w-9" data-type="last_mouth">เดือนที่แล้ว</button>
             </div>
@@ -135,11 +136,15 @@
                 startDate = moment().startOf('month');
                 endDate = moment().endOf("month");
             }else if(type == 'last_mouth'){
-                startDate = moment().subtract(1, 'months').format('MMM YYYY');
+                startDate = moment().subtract(1, 'months').startOf('month');
                 endDate = moment().subtract(1, 'months').endOf("month");
+            }else if(type == 'seven_day'){
+                startDate = moment().subtract(7, 'days');
+                endDate = moment();
             }
-            console.log(startDate,endDate)
-            console.log(startDate.format('DD/MM/YYYY'),endDate.format('DD/MM/YYYY'))
+            $('#start-date').val(startDate.format('DD/MM/YYYY'));
+            $('#end-date').val(endDate.format('DD/MM/YYYY'));
+            $('.btn-search').click();
         })
 
 

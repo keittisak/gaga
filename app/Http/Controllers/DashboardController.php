@@ -20,10 +20,14 @@ class DashboardController extends Controller
         $latestDate = Carbon::now()->format('d').' '.$monthShortTh[(Carbon::now()->format('m')-1)].' '.Carbon::now()->format('Y');
         $latestTime = Carbon::now()->format('H:i');
         $_request = new Request;
-        $salesByProduct = $this->SalesByProduct($_request, 'today');
+        $_request->merge([
+            'start_date' => Carbon::now()->format('Y-m-d'),
+            'end_date' => Carbon::now()->format('Y-m-d')
+        ]);
+        $salesByProduct = $this->SalesByProduct($_request);
         $overviewTotal = $this->overviewTotal($_request);
-        $orderByStatusTotal = $this->orderByStatusTotal($_request, 'today');
-        $saleChannel = $this->saleChannel($_request, 'today');
+        $orderByStatusTotal = $this->orderByStatusTotal($_request);
+        $saleChannel = $this->saleByChannel($_request);
         $data = [
             'title_eng' => 'Dashboard',
             'title_th' => 'Dashboard',
@@ -76,20 +80,11 @@ class DashboardController extends Controller
         return $response;
     }
 
-    public function SalesByProduct (Request $request, string $date)
+    public function SalesByProduct (Request $request)
     {
         $orderIds = Order::select('id')
-                ->when( !empty($date), function($q) use ($date){
-                    if($date == 'today'){
-                        $q->whereDate('created_at', Carbon::now()->format('Y-m-d'));
-                    }else if($date == 'yesterday'){
-                        $q->whereDate('created_at', Carbon::now()->subDays(1)->format('Y-m-d'));
-                    }else if($date == 'this_month'){
-                        $q->whereMonth('created_at',Carbon::now()->format('m'))->whereYear('created_at',Carbon::now()->format('Y'));
-                    }else if($date == 'last_mouth'){
-                        $q->whereMonth('created_at', Carbon::now()->subMonth()->format('m'))->whereYear('created_at',Carbon::now()->format('Y'));
-                    }
-                    return $q;
+                ->when( !empty($request->start_date) && !empty($request->end_date), function($q) use ($request){
+                    return $q->whereBetween(DB::raw('DATE(created_at)'), [$request->start_date, $request->end_date]);
                 })
                 ->get();
         $result = OrderDetail::select([
@@ -108,7 +103,7 @@ class DashboardController extends Controller
         return $result;
     }
 
-    public function orderByStatusTotal (Request $request, string $date)
+    public function orderByStatusTotal (Request $request)
     {
         $orders = [
             'draft' => ['title' => 'ร่าง', 'icon' => 'fas fa-inbox', 'text_color' => 'text-blue', 'quantity' => 0, 'net_total_amount' => 0],
@@ -125,16 +120,8 @@ class DashboardController extends Controller
                         DB::raw('SUM(net_total_amount) as net_total_amount'),
                         DB::raw('COUNT(*) as quantity'),
                     ])
-                    ->when( !empty($date), function($q) use ($date){
-                        if($date == 'today'){
-                            $q->whereDate('created_at', Carbon::now()->format('Y-m-d'));
-                        }else if($date == 'yesterday'){
-                            $q->whereDate('created_at', Carbon::now()->subDays(1)->format('Y-m-d'));
-                        }else if($date == 'this_month'){
-                            $q->whereMonth('created_at',Carbon::now()->format('m'))->whereYear('created_at',Carbon::now()->format('Y'));
-                        }else if($date == 'last_mouth'){
-                            $q->whereMonth('created_at', Carbon::now()->subMonth()->format('m'))->whereYear('created_at',Carbon::now()->format('Y'));
-                        }
+                    ->when( !empty($request->start_date) && !empty($request->end_date), function($q) use ($request){
+                        return $q->whereBetween(DB::raw('DATE(created_at)'), [$request->start_date, $request->end_date]);
                     })
                     ->groupBy('status')
                     ->get();
@@ -148,7 +135,7 @@ class DashboardController extends Controller
         return $orders;
     }
 
-    public function saleChannel (Request $request, string $date)
+    public function saleByChannel (Request $request)
     {
         $saleChannel = [
             'line' => ['icon' => 'fab fa-line', 'text_color' => 'text-orange', 'quantity' => 0, 'net_total_amount' =>0, 'per' => 0],
@@ -159,34 +146,28 @@ class DashboardController extends Controller
         $result = Order::select([
             'sale_channel',
             DB::raw('COUNT(*) as quantity'),
-            DB::raw('SUM(net_total_amount) as net_total_amount'),
+            // DB::raw('SUM(net_total_amount) as net_total_amount'),
         ])
-        // ->when( !empty($date), function($q) use ($date){
-        //     if($date == 'today'){
-        //         $q->whereDate('created_at', Carbon::now()->format('Y-m-d'));
-        //     }else if($date == 'yesterday'){
-        //         $q->whereDate('created_at', Carbon::now()->subDays(1)->format('Y-m-d'));
-        //     }else if($date == 'this_month'){
-        //         $q->whereMonth('created_at',Carbon::now()->format('m'))->whereYear('created_at',Carbon::now()->format('Y'));
-        //     }else if($date == 'last_mouth'){
-        //         $q->whereMonth('created_at', Carbon::now()->subMonth()->format('m'))->whereYear('created_at',Carbon::now()->format('Y'));
-        //     }
-        // })
+        ->when( !empty($request->start_date) && !empty($request->end_date), function($q) use ($request){
+            return $q->whereBetween(DB::raw('DATE(created_at)'), [$request->start_date, $request->end_date]);
+        })
         ->groupBy('sale_channel')
         ->get();
-
         $total = 0;
         $totalPer =0;
+        
         foreach($result as $item)
         {
             $total += $item->quantity;
             $saleChannel[$item->sale_channel]['quantity'] += $item->quantity;
             $saleChannel[$item->sale_channel]['net_total_amount'] += $item->quantity;
         }
-        foreach($saleChannel as $key => $item)
-        {
-            $pre = ($item['quantity']/$total)*100;
-            $saleChannel[$key]['pre'] = $pre;
+        if(count($result)){
+            foreach($saleChannel as $key => $item)
+            {
+                $pre = ($item['quantity']/$total)*100;
+                $saleChannel[$key]['per'] = round($pre,2);
+            }
         }
         return $saleChannel;
     }
