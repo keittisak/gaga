@@ -33,6 +33,24 @@ class OrderController extends Controller
         return view('orders.index', $data);
     }
 
+    public function history (Request $request)
+    {
+        $data = [
+            'title_eng' => 'Order History',
+            'title_th' => 'ประวัติออเดอร์',
+            'statusInfo' => [
+                'draft' => ['title' => 'ร่าง', 'icon' => 'fas fa-inbox', 'text_color' => 'text-blue'],
+                'unpaid' => ['title' => 'ยังไม่จ่าย', 'icon' => 'far fa-times-circle', 'text_color' => 'text-red'],
+                'transfered' => ['title' => 'โอนแล้ว', 'icon' => 'far fa-check-circle', 'text_color' => 'text-green'],
+                'packing' => ['title' => 'กำลังแพ็ค', 'icon' => 'fas fa-tape', 'text_color' => 'text-info'],
+                'paid' => ['title' => 'เตรียมส่ง', 'icon' => 'fas fa-archive', 'text_color' => 'text-muted'],
+                'shipped' => ['title' => 'ส่งแล้ว', 'icon' => 'fas fa-shipping-fast', 'text_color' => 'text-success'],
+                // 'voided' =>'ยกเลิก'
+            ]
+        ];
+        return view('orders.history', $data);
+    }
+
     public function data (Request $request)
     {
         $orders = Order::with(['payments'])
@@ -62,15 +80,6 @@ class OrderController extends Controller
                 ->editColumn('code', function($order){
                     return strtoupper($order->code);
                 })
-                ->editColumn('created_at', function($order){
-                    return date('d-m-Y H:i', strtotime($order->created_at));
-                })
-                ->addColumn('transfered_at',function($order){
-                    if(count($order->payments)){
-                        return date('d-m-Y H:i', strtotime($order->payments[0]->transfered_at));
-                    }
-                    return '-';
-                })
                 ->addColumn('checkbox', function($order){
                     return '<label class="custom-control custom-checkbox">
                             <input type="checkbox" class="custom-control-input checkbox-order" name="checkbox" value="'.$order->id.'">
@@ -82,10 +91,10 @@ class OrderController extends Controller
     }
 
     public function getOrderById(Request $request, int $id){
-        $order = Order::with(['details','payments'])->find($id);
-        if(!$order){
-            return abort(404);
-        }
+        $order = Order::with(['details','payments'])->findOrFail($id);
+        // if(!$order){
+        //     return abort(404);
+        // }
         return $order;
     }
 
@@ -122,7 +131,11 @@ class OrderController extends Controller
             'action' => 'create',
             'title_en' => 'Add Order',
             'title_th' => 'เพิ่มคำสั่งซื้อ',
-            'products' => Product::with(['skus'])->where('status','active')->get(),
+            'products' => Product::with(['skus' => function($q){
+                                $q->where('status','active');
+                            }])
+                            ->where('status','active')
+                            ->get(),
             'order' => $order
         ];
         return view('orders.form', $data);
@@ -237,6 +250,8 @@ class OrderController extends Controller
 
             $order = Order::create($data);
             if (isset($request->details)){
+                $discountAmount = $order->discount_amount;
+
                 foreach ($request->details as $data){
                     $_request = new Request();
                     $sku = Sku::find($data['sku_id'])->toArray();
@@ -247,6 +262,8 @@ class OrderController extends Controller
                     unset($sku['updated_by']);
                     unset($sku['created_at']);
                     unset($sku['updated_at']);
+
+                    $data['discount_amount'] = ($order->discount_amount/$order->total_quantity)*$data['quantity'];
                     
                     $data = array_merge($data,$sku);
                     $_request->merge($data);
@@ -394,7 +411,9 @@ class OrderController extends Controller
                 // $data['customer_id'] = $request->customer_id;
             }
             
-            $result = $order->update($data);
+            $resultOrder = $order->update($data);
+            $discountAmount = $data['discount_amount'];
+            $totalQuantity = $data['total_quantity'];
             if (isset($request->details)){
                 $detailIds = [];
                 foreach ($request->details as $data){
@@ -402,23 +421,22 @@ class OrderController extends Controller
                     if (isset($request->user()->id)){
                         $_request->merge(['created_by' => $request->user()->id, 'updated_by' => $request->user()->id]);
                     }
+                    $sku = Sku::find($data['sku_id'])->toArray();
+                    $data['sku_id'] = $sku['id'];
+                    unset($sku['id']);
+                    unset($sku['status']);
+                    unset($sku['created_by']);
+                    unset($sku['updated_by']);
+                    unset($sku['created_at']);
+                    unset($sku['updated_at']);
+                    $data['discount_amount'] = ($discountAmount/$totalQuantity)*$data['quantity'];
+                    $data = array_merge($data,$sku);
+                    $_request->merge($data);
                     if(empty($data['id']))
                     {
-                        $sku = Sku::find($data['sku_id'])->toArray();
-                        $data['sku_id'] = $sku['id'];
-                        unset($sku['id']);
-                        unset($sku['status']);
-                        unset($sku['created_by']);
-                        unset($sku['updated_by']);
-                        unset($sku['created_at']);
-                        unset($sku['updated_at']);
-                        
-                        $data = array_merge($data,$sku);
-                        $_request->merge($data);
                         $detail = (new OrderDetailController)->store($_request, $order->id);
                         $detailIds[] = $detail->id;
                     }else{
-                        $_request->merge($data);
                         $detail = (new OrderDetailController)->update($_request, $order->id, $data['id']);
                         $detailIds[] = $detail->id;
                     }

@@ -10,8 +10,9 @@ class StockMovement extends Model
         'sku_id' ,'quantity', 'type', 'reference_code', 'remark', 'created_by', 'updated_by'
     ];
 
-    public function tenant(){
-        return $this->belongsTo('App\Tenant');
+    public function sku()
+    {
+        return $this->belongsTo('App\Sku');
     }
 
     public function created_by_user()

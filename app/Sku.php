@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Sku extends Model
 {
+    use SoftDeletes;
+    
     protected $dates = ['created_at', 'updated_at'];
     
     protected $fillable = [
@@ -36,5 +38,10 @@ class Sku extends Model
     public function updated_by_user()
     {
         return $this->belongsTo('App\User', 'updated_by');
+    }
+
+    public function stockMovement()
+    {
+        return $this->hasOne('App\StockMovement');
     }
 }

@@ -32,8 +32,8 @@ class PaymentController extends Controller
                 // 'exists:statements,id'
             ],
             'amount' => [
-                'numeric',
-                'min:0'
+                // 'numeric',
+                // 'min:0'
             ],
             'transfered_at' => [
                 'date_format:Y-m-d H:i:s'
@@ -90,8 +90,8 @@ class PaymentController extends Controller
                 // 'exists:statements,id'
             ],
             'amount' => [
-                'numeric',
-                'min:0'
+                // 'numeric',
+                // 'min:0'
             ],
             'transfered_at' => [
                 'date_format:Y-m-d H:i:s'

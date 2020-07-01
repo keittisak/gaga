@@ -42,6 +42,8 @@
     <!-- Date Picker -->
     <link rel="stylesheet" href="{{ asset('assets/plugins/datepicker/datepicker3.css') }}">
     <script src="{{ asset('assets/plugins/datepicker/plugin.js') }}"></script>
+    <!-- Moment -->
+    <script src="{{ asset('assets/plugins/moment/plugin.js') }}"></script>
     @yield('css')
 </head>
 <style>
@@ -135,6 +137,24 @@
             $('.loader-page').remove();
         }
       }
+
+    utilities = {
+        numberFormat:function(n,digit=2){
+            if (n === '') {
+                return '';
+            }
+            else if (n == 0 || isNaN(n) || n == null || n == undefined) {
+                return (digit == undefined) ? '0' : parseFloat('0').toFixed(digit);
+            }
+
+            if (digit == undefined) {
+                return (parseFloat(n) + '').replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+            }
+            return parseFloat(n).toFixed(digit).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+        },
+    }
+
+
     });
       
 </script>

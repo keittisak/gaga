@@ -185,7 +185,7 @@
                 </div>
                 <div class="col-12 col-md-6">
                     <div class="form-group">
-                        <label class="form-label">ผู้สั่งสินค้า</label>
+                        <label class="form-label">ลูกค้า</label>
                         <input type="text" class="form-control" name="customer-input">
                     </div>
                 </div>
@@ -221,7 +221,7 @@
     var $_status = 'draft';
     var $_paging = false;
     var $_showCheckbox = true;
-    require(['jquery', 'datatables','datepicker','sweetAlert','selectize','select2'], function($, datatable, datepicker, Swal,selectize,select2) {
+    require(['jquery', 'datatables','datepicker','sweetAlert','selectize','select2', 'moment'], function($, datatable, datepicker, Swal,selectize,select2, moment) {
         $('.select2').select2();
         $('.selectize').selectize();
         $('.datepicker').datepicker({
@@ -276,7 +276,7 @@
                 { data: 'shipping_full_name', name: 'shipping_full_name' },
                 { data: 'net_total_amount', name: 'net_total_amount' },
                 { data: 'status', name: 'status' },
-                { data: 'transfered_at', name: 'transfered_at' },
+                { data: 'payments', name: 'payments' },
             ],
             order:[[1,"desc"]],
             paging:$_paging,
@@ -289,6 +289,12 @@
                     targets:1,
                     render: function (data, type, full, meta){
                         return `<button class="btn btn-link pl-0 show-details" data-id='${full.id}'>${data}</button>`;
+                    }
+                },
+                {
+                    targets:2,
+                    render: function (data, type, full, meta){
+                        return moment(data).format('DD/MM/YYYY H:mm');
                     }
                 },
                 {
@@ -311,7 +317,7 @@
                     targets: 5,
                     // className:'text-right',
                     render: function (data, type, full, meta){
-                        return data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        return utilities.numberFormat(data);
                     }
                 },
                 {
@@ -329,7 +335,13 @@
                         };
                         return status[data];
                     }
-                }
+                },
+                {
+                    targets:7,
+                    render: function (data, type, full, meta){
+                        return moment(data[0].transfered_at).format('DD/MM/YYYY H:mm');
+                    }
+                },
             ],
             initComplete: function(){
                 // $('.dataTables_filter').remove();
@@ -379,18 +391,27 @@
                 var $tableDetails = $('#table-details');
                 var elementItem = ``;
                 $.each(data.details, function(key, item){
-                    elementItem+= `<tr><td>${item.full_name}</td><td class="text-right">${item.quantity}</td><td class='text-right'>${item.total_amount}</td></tr>`;
+                    elementItem+= `<tr><td>${item.full_name}</td><td class="text-right">${utilities.numberFormat(item.quantity,0)}</td><td class='text-right'>${utilities.numberFormat(item.total_amount)}</td></tr>`;
                 });
                 $('#customer-fullname').html(data.shipping_full_name);
                 $('#customer-address').html(data.shipping_full_address);
                 $tableDetails.find('tbody').html(elementItem);
-                $tableDetails.find('.total-amount').html(data.total_amount);
-                $tableDetails.find('.shipping-fee').html(data.shipping_fee);
-                $tableDetails.find('.discount-amount').html(data.discount_amount);
-                $tableDetails.find('.net-total-amount strong').html(data.net_total_amount);
-                $('.detail-transfered-at strong').html(`เวลาโอนเงิน: ${data.payments[0].transfered_at}`);
-                $('.detail-slip-image').attr('href',data.payments[0].image);
-                $('.detail-created-at').html(`${data.created_at} ${(data.created_by)?data.created_by.name:""}`);
+                $tableDetails.find('.total-amount').html(utilities.numberFormat(data.total_amount));
+                $tableDetails.find('.shipping-fee').html(utilities.numberFormat(data.shipping_fee));
+                $tableDetails.find('.discount-amount').html(utilities.numberFormat(data.discount_amount));
+                $tableDetails.find('.net-total-amount strong').html(utilities.numberFormat(data.net_total_amount));
+
+                if(data.payments[0] != undefined){
+                    var transfered_at = moment(data.payments[0].transfered_at).format('DD/MM/YYYY H:mm');
+                    $('.detail-transfered-at strong').html(`เวลาโอนเงิน: ${transfered_at}`);
+                    $('.detail-slip-image').attr('href',data.payments[0].image);
+                    if(data.payments[0].image){
+                        $('.detail-slip-image').removeClass('d-none');
+                    }else{
+                        $('.detail-slip-image').addClass('d-none');
+                    }
+                }
+                $('.detail-created-at').html(`${moment(data.created_at).format('DD/MM/YYYY H:mm')} ${(data.created_by)?data.created_by.name:""}`);
                 var urlEditOrder = "{{ route('orders.edit', '__id') }}";
                 urlEditOrder  = urlEditOrder.replace('__id',data.id);
                 $('.btn-edit-order').attr('href',urlEditOrder);

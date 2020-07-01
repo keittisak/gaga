@@ -27,6 +27,7 @@ Route::get('/layouts', function () {
 
 //Order
 Route::get('/orders', 'OrderController@index')->name('orders.index');
+Route::get('/orders/history', 'OrderController@history')->name('orders.history');
 Route::get('/orders/data', 'OrderController@data')->name('orders.data');
 Route::get('/orders/data/{id}', 'OrderController@getOrderById')->name('orders.by.id');
 Route::get('/orders/overview', 'OrderController@overview')->name('orders.overview');
@@ -54,12 +55,16 @@ Route::get('/customers', 'CustomerController@index')->name('customers.index');
 Route::get('/customers/data', 'CustomerController@data')->name('customers.index');
 Route::get('/customers/search-phone', 'CustomerController@searchPhone')->name('customers.search.phone');
 
-
+//Stock
 Route::get('/stocks', 'StockController@index')->name('stocks.index');
 Route::get('/stocks/data', 'StockController@data')->name('stocks.data');
 Route::post('/stocks', 'StockController@store')->name('stocks.store');
 Route::put('/stocks/{id}', 'StockController@update')->name('stocks.update');
 Route::delete('/stocks/{id}', 'StockController@destroy')->name('stocks.destroy');
+
+//Stock Movement
+Route::get('/stock-movement', 'StockMovementController@index')->name('stock.movement.index');
+Route::get('/stock-movement/data', 'StockMovementController@data')->name('stock.movement.data');
 
 //Dashboard
 Route::get('/dashboard', 'DashboardController@index')->name('dashboard.index');

@@ -146,7 +146,7 @@
                     url:"{!! route('stocks.data') !!}",
                 },
                 columns: [
-                    { data: 'id', name: 'id' },
+                    { data: 'sku.full_name', name: 'sku.full_name' },
                     { data: 'sku.price', name: 'sku.price',className:'text-right',},
                     { data: 'available', name: 'available',className:'text-right', },
                     { data: 'draft', name: 'draft',className:'text-right', },
@@ -157,9 +157,9 @@
                 // searching:false,
                 columnDefs : [
                     {
-                        targets:0,
+                        targets:1,
                         render: function (data, type, full, meta){
-                            return full.sku.product.name+' '+full.sku.name
+                            return pricceFormat(data)
                         }
                     },
                     {
@@ -210,8 +210,7 @@
 
             $(document).on('click','.btn-edit',function(e){
                 var stock = $(this).data('stock');
-                var name = stock.sku.product.name+' '+stock.sku.name
-                $('.modal-title').html('#'+name);
+                $('.modal-title').html('#'+stock.sku.full_name);
                 $(this).prop('disabled',false);
                 $('.btn-action').attr('data-available', stock.available);
                 $('.btn-action').attr('data-id', stock.id);

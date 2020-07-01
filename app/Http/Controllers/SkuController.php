@@ -26,6 +26,9 @@ class SkuController extends Controller
             'name' => [
                 'nullable'
             ],
+            'full_name' => [
+                'nullable'
+            ],
             'product_id' => [
                 'required',
                 'integer',
@@ -102,6 +105,9 @@ class SkuController extends Controller
             //     'max:30'
             // ],
             'name' => [
+                'nullable'
+            ],
+            'full_name' => [
                 'nullable'
             ],
             'product_id' => [

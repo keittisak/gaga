@@ -17,9 +17,9 @@
             <li class="nav-item">
               <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-file"></i> ออเดอร์</a>
               <div class="dropdown-menu dropdown-menu-arrow">
-                <a href="{{ route('orders.create') }}" class="dropdown-item ">สร้างออเดอร์</a>
                 <a href="{{ route('orders.index') }}" class="dropdown-item ">จัดการออเดอร์</a>
-                <a href="{{ route('orders.index') }}" class="dropdown-item ">ประวัติออเดอร์</a>
+                <a href="{{ route('orders.create') }}" class="dropdown-item ">สร้างออเดอร์</a>
+                <a href="{{ route('orders.history') }}" class="dropdown-item ">ประวัติออเดอร์</a>
               </div>
             </li>
             <li class="nav-item dropdown">
@@ -27,6 +27,7 @@
               <div class="dropdown-menu dropdown-menu-arrow">
                 <a href="{{ route('products.index') }}" class="dropdown-item ">สินค้า</a>
                 <a href="{{ route('stocks.index') }}" class="dropdown-item ">คลังสินค้า</a>
+                <a href="{{ route('stock.movement.index') }}" class="dropdown-item ">การเคลื่อนไหวของสินค้า</a>
               </div>
             </li>
             <li class="nav-item dropdown">

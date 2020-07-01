@@ -24,6 +24,14 @@
             </div>
         </div>
     </div>
+    @php
+        $dates = [
+            'today' => 'วันนี้',
+            'yesterday' => 'เมื่อวาน',
+            'this_month' => 'เดือนนี้',
+            'last_mouth' => 'เดือนที่แล้ว'
+        ];
+    @endphp 
     <div class="row">
         @foreach ($overviewTotal as $key => $item)
         @php
@@ -51,6 +59,44 @@
     <div class="row">
         <div class="col-md-6">
             <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">ออเดอร์</h4>
+                    <div class="card-options">
+                        @foreach ($dates as $key => $date)
+                        <a href="#" class="btn {{ ($key=='today')?'btn-primary':'btn-secondary' }} btn-sm ml-2">{{$date}}</a>
+                        @endforeach
+                    </div>
+                </div>
+                <table class="table card-table">
+                    <thead>
+                        <tr>
+                            <th>สถานะ</th>
+                            <th class="text-right">จำนวน</th>
+                            <th class="text-right">ยอดสุธิ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($orderByStatusTotal as $status => $order)
+                        @if($status != 'total')
+                            <tr>
+                                <td><span class="{{ $order['text_color'] }} mr-2"><i class="{{ $order['icon'] }}"></i></span> {{ $order['title'] }}</td>
+                                <td class="text-right">{{ $order['quantity'] }}</td>
+                                <td class="text-right">{{ $order['net_total_amount'] }}</td>
+                            </tr>
+                        @endif
+                        @endforeach
+                        <tr>
+                            <td>จำนวนทั้งหมด</td>
+                            <td class="text-right">{{ $orderByStatusTotal['total']['quantity'] }}</td>
+                            <td class="text-right">{{ $orderByStatusTotal['total']['net_total_amount'] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card" style="min-height:300px">
                 <div class="card-header">
                     <h3 class="card-title">ยอดขายตามสินค้า</h3>
                     <div class="card-options">
@@ -82,41 +128,47 @@
                 </table>
             </div>
         </div>
+    </div>
+    <div class="row">
         <div class="col-md-6">
             <div class="card">
-              <div class="card-header">
+                <div class="card-header">
                 <h4 class="card-title">ช่องทางสั่งซื้อ</h4>
                 <div class="card-options">
                     <a href="#" class="btn btn-primary btn-sm">7 วัน</a>
                     <a href="#" class="btn btn-secondary btn-sm ml-2">30 วัน</a>
                     <a href="#" class="btn btn-secondary btn-sm ml-2">120 วัน</a>
                 </div>
-              </div>
-              <table class="table card-table">
-                <tbody><tr>
-                  <td width="1"><i class="fab fa-line"></i></td>
-                  <td>Line</td>
-                  <td class="text-right"><span class="text-muted">23%</span></td>
+                </div>
+                <table class="table card-table">
+                <tbody>
+                    @foreach ($saleChannel as $key => $item)
+                    <tr>
+                        <td width="1"><span class="{{$item['text_color']}}"><i class="{{ $item['icon'] }}"></i></span></td>
+                        <td>{{ strtoupper($key) }}</td>
+                    <td class="text-right"><span class="text-muted">{{ $item['pre'] }}%</span></td>
+                    </tr>
+                    @endforeach
+{{-- 
+                <tr>
+                    <td><i class="fab fa-facebook-square"></i></td>
+                    <td>Facebook</td>
+                    <td class="text-right"><span class="text-muted">15%</span></td>
                 </tr>
                 <tr>
-                  <td><i class="fab fa-facebook-square"></i></td>
-                  <td>Facebook</td>
-                  <td class="text-right"><span class="text-muted">15%</span></td>
+                    <td><i class="fab fa-instagram-square"></i></td>
+                    <td>Instagram</td>
+                    <td class="text-right"><span class="text-muted">7%</span></td>
                 </tr>
                 <tr>
-                  <td><i class="fab fa-instagram-square"></i></td>
-                  <td>Instagram</td>
-                  <td class="text-right"><span class="text-muted">7%</span></td>
+                    <td><i class="fas fa-ellipsis-h"></i></td>
+                    <td>Other</td>
+                    <td class="text-right"><span class="text-muted">9%</span></td>
                 </tr>
-                <tr>
-                  <td><i class="fas fa-ellipsis-h"></i></td>
-                  <td>Other</td>
-                  <td class="text-right"><span class="text-muted">9%</span></td>
-                </tr>
-                <tr>
-              </tbody></table>
+                <tr> --}}
+                </tbody></table>
             </div>
-          </div>
+        </div>
     </div>
 </div>
 

@@ -146,6 +146,7 @@ class ProductController extends Controller
                     if(isset($data['active'])){
                         $_request = new Request();
                         $data['product_id'] = $product->id;
+                        $data['full_name'] = $product->name.' '.$data['name'];
                         $_request->merge($data);
                         if (isset($request->user()->id)){
                             $_request->merge(['created_by' => $request->user()->id, 'updated_by' => $request->user()->id]);
@@ -332,6 +333,7 @@ class ProductController extends Controller
                     $_request = new Request();
                     $data['product_id'] = $product->id;
                     $data['status'] = 'active';
+                    $data['full_name'] = $product->name.' '.$data['name'];
                     if(!isset($data['active'])){ $data['status'] = 'inactive'; }
                     if(empty($data['id'])){
                         if (isset($request->user()->id)){

@@ -15,19 +15,24 @@ class DashboardController extends Controller
 {
     public function index (Request $request)
     {
+        // dd((200/5)*2); หาส่วนลด
         $monthShortTh = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค." , "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
         $latestDate = Carbon::now()->format('d').' '.$monthShortTh[(Carbon::now()->format('m')-1)].' '.Carbon::now()->format('Y');
         $latestTime = Carbon::now()->format('H:i');
         $_request = new Request;
-        $salesByProduct = $this->SalesByProduct($_request);
+        $salesByProduct = $this->SalesByProduct($_request, 'today');
         $overviewTotal = $this->overviewTotal($_request);
-        $data = $data = [
+        $orderByStatusTotal = $this->orderByStatusTotal($_request, 'today');
+        $saleChannel = $this->saleChannel($_request, 'today');
+        $data = [
             'title_eng' => 'Dashboard',
             'title_th' => 'Dashboard',
             'latestDate' => $latestDate,
             'latestTime' => $latestTime,
             'overviewTotal' => $overviewTotal,
-            'salesByProduct' => $salesByProduct
+            'salesByProduct' => $salesByProduct,
+            'orderByStatusTotal' => $orderByStatusTotal,
+            'saleChannel' => $saleChannel
         ];
         return view('dashboard',$data);
     }
@@ -71,26 +76,119 @@ class DashboardController extends Controller
         return $response;
     }
 
-    public function SalesByProduct (Request $request)
+    public function SalesByProduct (Request $request, string $date)
     {
+        $orderIds = Order::select('id')
+                ->when( !empty($date), function($q) use ($date){
+                    if($date == 'today'){
+                        $q->whereDate('created_at', Carbon::now()->format('Y-m-d'));
+                    }else if($date == 'yesterday'){
+                        $q->whereDate('created_at', Carbon::now()->subDays(1)->format('Y-m-d'));
+                    }else if($date == 'this_month'){
+                        $q->whereMonth('created_at',Carbon::now()->format('m'))->whereYear('created_at',Carbon::now()->format('Y'));
+                    }else if($date == 'last_mouth'){
+                        $q->whereMonth('created_at', Carbon::now()->subMonth()->format('m'))->whereYear('created_at',Carbon::now()->format('Y'));
+                    }
+                    return $q;
+                })
+                ->get();
         $result = OrderDetail::select([
             'sku_id',
             'full_name',
             DB::raw('SUM(quantity) as quantity'),
             DB::raw('SUM(total_amount) as total_amount')
         ])
+        ->whereIn('order_id', $orderIds)
         ->whereHas('order', function($q) use ($request){
             $q->where('status', '!=', 'voided');
-        })
-        ->when($request->date, function($q) use ($request){
-            $startDate = Carbon::now()->subDays($request->date)->format('Y-m-d');
-            $endDate = Carbon::now()->format('Y-m-d');
-            return $q->whereBetween(DB::raw('DATE(created_at'), [$startDate,$endDate]);
         })
         ->groupBy('sku_id')
         ->orderBy('total_amount', 'desc')
         ->get();
         return $result;
+    }
+
+    public function orderByStatusTotal (Request $request, string $date)
+    {
+        $orders = [
+            'draft' => ['title' => 'ร่าง', 'icon' => 'fas fa-inbox', 'text_color' => 'text-blue', 'quantity' => 0, 'net_total_amount' => 0],
+            'unpaid' => ['title' => 'ยังไม่จ่าย', 'icon' => 'far fa-times-circle', 'text_color' => 'text-red', 'quantity' => 0, 'net_total_amount' => 0],
+            'transfered' => ['title' => 'โอนแล้ว', 'icon' => 'far fa-check-circle', 'text_color' => 'text-green', 'quantity' => 0, 'net_total_amount' => 0],
+            'packing' => ['title' => 'กำลังแพ็ค', 'icon' => 'fas fa-tape', 'text_color' => 'text-info', 'quantity' => 0, 'net_total_amount' => 0],
+            'paid' => ['title' => 'เตรียมส่ง', 'icon' => 'fas fa-archive', 'text_color' => 'text-muted', 'quantity' => 0, 'net_total_amount' => 0],
+            'shipped' => ['title' => 'ส่งแล้ว', 'icon' => 'fas fa-shipping-fast', 'text_color' => 'text-success', 'quantity' => 0, 'net_total_amount' => 0],
+            'voided' => ['title' => 'ยกเลิก', 'icon' => 'far fa-trash-alt', 'text_color' => 'text-red', 'quantity' => 0, 'net_total_amount' => 0],
+            'total' => ['title' => 'จำนวนทั้งหมด', 'quantity' => 0, 'net_total_amount' => 0],
+        ];
+        $result = Order::select([
+                        'status',
+                        DB::raw('SUM(net_total_amount) as net_total_amount'),
+                        DB::raw('COUNT(*) as quantity'),
+                    ])
+                    ->when( !empty($date), function($q) use ($date){
+                        if($date == 'today'){
+                            $q->whereDate('created_at', Carbon::now()->format('Y-m-d'));
+                        }else if($date == 'yesterday'){
+                            $q->whereDate('created_at', Carbon::now()->subDays(1)->format('Y-m-d'));
+                        }else if($date == 'this_month'){
+                            $q->whereMonth('created_at',Carbon::now()->format('m'))->whereYear('created_at',Carbon::now()->format('Y'));
+                        }else if($date == 'last_mouth'){
+                            $q->whereMonth('created_at', Carbon::now()->subMonth()->format('m'))->whereYear('created_at',Carbon::now()->format('Y'));
+                        }
+                    })
+                    ->groupBy('status')
+                    ->get();
+        foreach($result as $item)
+        {
+            $orders[$item->status]['quantity'] += $item->quantity;
+            $orders[$item->status]['net_total_amount'] += $item->net_total_amount;
+            $orders['total']['quantity'] += $item->quantity;
+            $orders['total']['net_total_amount'] += $item->net_total_amount;
+        }
+        return $orders;
+    }
+
+    public function saleChannel (Request $request, string $date)
+    {
+        $saleChannel = [
+            'line' => ['icon' => 'fab fa-line', 'text_color' => 'text-orange', 'quantity' => 0, 'net_total_amount' =>0, 'per' => 0],
+            'facebook' => ['icon' => 'fab fa-facebook-square', 'text_color' => 'text-blue', 'quantity' => 0, 'net_total_amount' =>0, 'per' => 0],
+            'instagram' => ['icon' => 'fab fa-instagram-square', 'text_color' => 'text-muten', 'quantity' => 0, 'net_total_amount' =>0, 'per' => 0],
+            'other' => ['icon' => 'fas fa-ellipsis-h', 'text_color' => 'text-muten', 'quantity' => 0, 'net_total_amount' =>0, 'per' => 0],
+        ];
+        $result = Order::select([
+            'sale_channel',
+            DB::raw('COUNT(*) as quantity'),
+            DB::raw('SUM(net_total_amount) as net_total_amount'),
+        ])
+        // ->when( !empty($date), function($q) use ($date){
+        //     if($date == 'today'){
+        //         $q->whereDate('created_at', Carbon::now()->format('Y-m-d'));
+        //     }else if($date == 'yesterday'){
+        //         $q->whereDate('created_at', Carbon::now()->subDays(1)->format('Y-m-d'));
+        //     }else if($date == 'this_month'){
+        //         $q->whereMonth('created_at',Carbon::now()->format('m'))->whereYear('created_at',Carbon::now()->format('Y'));
+        //     }else if($date == 'last_mouth'){
+        //         $q->whereMonth('created_at', Carbon::now()->subMonth()->format('m'))->whereYear('created_at',Carbon::now()->format('Y'));
+        //     }
+        // })
+        ->groupBy('sale_channel')
+        ->get();
+
+        $total = 0;
+        $totalPer =0;
+        foreach($result as $item)
+        {
+            $total += $item->quantity;
+            $saleChannel[$item->sale_channel]['quantity'] += $item->quantity;
+            $saleChannel[$item->sale_channel]['net_total_amount'] += $item->quantity;
+        }
+        foreach($saleChannel as $key => $item)
+        {
+            $pre = ($item['quantity']/$total)*100;
+            $saleChannel[$key]['pre'] = $pre;
+        }
+        return $saleChannel;
     }
 
 

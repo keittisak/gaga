@@ -20,8 +20,16 @@ class StockController extends Controller
 
     public function data (Request $request)
     {
-        $data = Stock::with(['sku.product'])->get();
-        return DataTables::of($data)->make(true);
+        $data = Stock::with(['sku'])
+        ->when(isset($request['search']['value']),function($q) use ($request){
+            $text = $request['search']['value'];
+            $q->whereHas('sku',function($query) use ($text){
+                $query->where('full_name', 'like', '%' . $text . '%');
+            });
+        })
+        ->get();
+        // dd($data->toArray());
+        return DataTables::of($data->toArray())->make(true);
     }
 
     public function store(Request $request, int $sku_id)

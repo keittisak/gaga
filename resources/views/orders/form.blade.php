@@ -66,9 +66,9 @@
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">ตำบล / อำเภอ / จังหวัด / รหัสไปรษณีย์</label>
-                            <input type="hidden" readonly name="shipping_subdistrict_id" value="">
+                            {{-- <input type="hidden" readonly name="shipping_subdistrict_id" value=""> --}}
                             <input type="hidden" readonly name="shipping_subdistrict_name" value="">
-                            <select name="shipping_subdistrict" id="shipping_subdistrict" class="form-control custom-select">
+                            <select name="shipping_subdistrict_id" id="shipping_subdistrict_id" class="form-control custom-select">
                             </select>
                         </div>
                     </div>
@@ -236,16 +236,16 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 offset-md-3 col-12">
-                        <div class="form-group">
+                        {{-- <div class="form-group">
                             <label for="" class="form-label">โอนเข้าบัญชี</label>
                              <select class="form-control" name="payments[bank_id]" id="bank_id_transfer">
                                  <option value="1" data-account-no="123456">ธนาคารกสิกรไทย</option>
                              </select>
-                        </div>
-                        <div class="form-group">
+                        </div> --}}
+                        {{-- <div class="form-group">
                             <label for="" class="form-label">เลขที่บัญชี</label>
                             <div class="form-control-plaintext" id="account-no">123456</div>
-                        </div>
+                        </div> --}}
                         <div class="form-group">
                             <label for="" class="form-label">วันที่โอน</label>
                         <input type="text" name="payments[date]" id="date_transfer" class="form-control" value="{{ (isset($order->payments[0]))?date('d/m/Y', strtotime($order->payments[0]->transfered_at)):'' }}"
@@ -258,10 +258,10 @@
                             value="{{ (isset($order->payments[0]))?date('H:i', strtotime($order->payments[0]->transfered_at)):'' }}"
                             >
                         </div>
-                        <div class="form-group">
+                        {{-- <div class="form-group">
                             <label for="" class="form-label">ยอดโอน</label>
                             <input type="text" name="payments[amount]" id="amount_transfer" class="form-control" value="{{ (isset($order->payments[0]))?$order->payments[0]->amount:'' }}">
-                        </div>
+                        </div> --}}
                         <div class="form-group">
                             <label for="" class="form-label">สลิปการโอน</label>
                             <button type="button" class="btn btn-secondary d-block" id="btn-image-transfer"><i class="far fa-file-image"></i> เลือกไฟล์</button>
@@ -276,9 +276,14 @@
     </div>
 </div>
 
+
 <div class="btn-list text-center prompt-front">
+    @if(in_array($order->status,['draft', 'unpaid', 'transfered']))
     <button type="button" class="btn btn-pill btn-primary btn-lg btn-save" value="save">บันทึกคำสั่งซื้อ</button>
     <button class="btn btn-pill btn-secondary btn-lg btn-save" value="save_and_new">บันทึกคำสั่งซื้อและเพิ่ม</button>
+    @else 
+    <a href="{{route('orders.index')}}" class="btn btn-pill btn-primary btn-lg btn-save">กลับ</button>
+    @endif
 </div>
 </form>
 <div class="modal fade prompt-front" id="product-modal" tabindex="-1" role="dialog">
@@ -320,29 +325,34 @@
     require(['jquery', 'selectize', 'datatables','jqueryForm', 'datepicker','sweetAlert','select2'], function ($, selectize, $datatable,form, datepicker,Swal,select2) {
         $('.select2').select2();
         @if($order->shipping_subdistrict_id)
-        $(function(){
+            selectedSubdistrict({!! $order->shipping_subdistrict_id !!});
+        @endif
+
+        function selectedSubdistrict(id=""){
             $.ajax({
                 url: '{{ asset("assets/json/subdistrict.json") }}',
                 dataType: 'json',
             }).done(function( data ) {
-                var subdistrictId = {!! $order->shipping_subdistrict_id !!};
-                data = data[subdistrictId];
-                $('#shipping_subdistrict').select2({
-                    data :[{ 
-                            id: subdistrictId, 
-                            text: data.name,
-                            selected: true
-                        }]
-                });
+                // var subdistrictId = {!! $order->shipping_subdistrict_id !!};
+                // data = data[subdistrictId];
+                data = data[id]
+                $('#shipping_subdistrict_id').html(`<option value="${id}">${data.name}</option>`)
+                $('input[name=shipping_subdistrict_name]').val(data.name);
+                // $eventSelect = $('#shipping_subdistrict_id').select2({
+                //     data :[{ 
+                //             id: 1, 
+                //             text: data.name,
+                //             selected: true
+                //         }]
+                // });
             });
-        });
-        @endif
+        }
 
-        $('#shipping_subdistrict').select2({
+        $eventSelect = $('#shipping_subdistrict_id').select2({
             ajax:{
                 url: '{{ asset("assets/json/subdistrict.json") }}',
                 dataType:"json",
-                delay: 250,
+                delay: 1000,
                 data: function (params) {
                     var data = {
                         q:params.term,
@@ -367,6 +377,10 @@
             }
         });
 
+        $('#shipping_subdistrict_id').on('select2:select', function (e) {
+            $('input[name=shipping_subdistrict_name]').val(e.params.data.text);
+        });
+
         $('#date_transfer').datepicker({
             autoclose:true,
             format:'dd/mm/yyyy',
@@ -389,16 +403,17 @@
                     $('#customer_id').val(data.id);
                     $('#shipping_full_name').val(data.full_name);
                     $('#shipping_address').val(data.address);
-                    var $select = $('#shipping_subdistrict').selectize();
-                    var selectize = $select[0].selectize;
-                    selectize.setValue(data.subdistrict_id);
+                    selectedSubdistrict(data.subdistrict_id);
+                    // var $select = $('#shipping_subdistrict').selectize();
+                    // var selectize = $select[0].selectize;
+                    // selectize.setValue(data.subdistrict_id);
                 }else{
                     $('#customer_id').val('');
                     $('#shipping_full_name').val('');
                     $('#shipping_address').val('');
-                    var $select = $('#shipping_subdistrict').selectize();
-                    var selectize = $select[0].selectize;
-                    selectize.setValue('');
+                    // var $select = $('#shipping_subdistrict').selectize();
+                    // var selectize = $select[0].selectize;
+                    // selectize.setValue('');
                 }
                 loader.close();
             }).fail(function( jqxhr, textStatus ) {
@@ -431,6 +446,7 @@
         $('#form').ajaxForm({
                 dataType: 'json',
                 beforeSubmit: function (arr, $form, options) {
+                    $('.btn-save').prop('disabled',true);
                     loader.init();
                 },
                 success: function (res) {
@@ -446,6 +462,7 @@
                     });
                 },
                 error: function (jqXHR, status, options, $form) {
+                    $('.btn-save').prop('disabled',true);
                     loader.close();
                     if(jqXHR.status === 422){
                         Swal.fire({
