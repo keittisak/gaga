@@ -487,10 +487,7 @@
             var index = $('.detail_products').length;
             index+=1;
 
-            if(product.type == 'simple'){
-                display_none = 'd-none'
-            }
-            select_sku += `<select name="details[${index}][sku_id]" id="" class="form-control font-italic select2 ${display_none}">`;
+            select_sku += `<select name="details[${index}][sku_id]" id="" class="form-control font-italic  ${(product.type == 'simple')?'d-none':''}">`;
             for(i = 0; i < skus.length; i++)
             {
                 select_sku += `<option value="${skus[i].id}">${skus[i].name} - ${skus[i].price}</option>`
@@ -529,7 +526,9 @@
                         </div>
                         <br>`;
             $('.detail-display').append(element);
-            if(product.type == 'simple'){$('.select2').select2();}
+            if(product.type == 'variable'){
+                $(`select[name="details[${index}][sku_id]"]`).select2();
+            }
             updateTotalAmount();
             $('#product-modal').modal('hide');
         });
