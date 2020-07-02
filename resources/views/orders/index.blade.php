@@ -75,16 +75,17 @@
         <div class="dropdown">
             <button data-toggle="dropdown" type="button" class="btn btn-primary dropdown-toggle btn-change-status" aria-expanded="true">เปลี่ยนสถานะ</button>
             <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" x-placement="bottom-end" style="position: absolute; transform: translate3d(-56px, 32px, 0px); top: 0px; left: 0px; will-change: transform;">
-              <a class="dropdown-item btn-change-status-items" data-status="draft">ร่าง</a>
-              <a class="dropdown-item btn-change-status-items" data-status="unpaid">ยังไม่จ่าย</a>
-              <a class="dropdown-item btn-change-status-items" data-status="shipped">ส่งแล้ว</a>
+                @foreach ($statusInfo as $status => $item)
+                <a class="dropdown-item btn-change-status-items" data-status="{{$status}}"><span class="{{$item['text_color']}} mr-3"><i class="{{$item['icon']}}"></i></span>{{$item['title']}}</a>
+                @endforeach
             </div>
         </div>
         <div class="dropdown">
             <button data-toggle="dropdown" type="button" class="btn btn-primary dropdown-toggle btn-print" aria-expanded="true">พิมพ์</button>
             <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" x-placement="bottom-end" style="position: absolute; transform: translate3d(-56px, 32px, 0px); top: 0px; left: 0px; will-change: transform;">
-              <a class="dropdown-item btn-print-items" data-type="label">ใบปะหน้ากล่อง</a>
-              <a class="dropdown-item btn-print-items" data-type="list">รายการแพ็คของ</a>
+                <a class="dropdown-item btn-print-items" data-type="label"><span class="text-primary mr-3"><i class="fas fa-tag"></i></span>{{ __('ใบปะหน้ากล่อง 1') }}</a>
+                <a class="dropdown-item btn-print-items" data-type="label"><span class="text-primary mr-3"><i class="fas fa-tag"></i></span>{{ __('ใบปะหน้ากล่อง 2') }}</a>
+                <a class="dropdown-item btn-print-items" data-type="list"><span class="text-info mr-3"><i class="far fa-list-alt"></i></span>{{ __('รายการแพ็คของ') }}</a>
             </div>
         </div>
     </div>
@@ -520,6 +521,8 @@
                         });
                         loadOverview();
                         table.draw();
+                        $('.btn-change-status').text(`เปลี่ยนสถานะ`);
+                        $('.btn-print').text(`พิมพ์`);
                     })
                     .fail(function(jqXHR, textStatus, $form) {
                         loader.close();
