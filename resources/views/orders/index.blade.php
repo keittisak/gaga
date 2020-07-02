@@ -42,7 +42,7 @@
                     <i class="fas fa-shipping-fast"></i>
                     @endif
                     </div>
-                <div class="h1 m-0 overview-text-{{$status}}">43</div>
+                <div class="h1 m-0 overview-text-{{$status}}">0</div>
                 <div class="text-muted">{{ $item['title'] }}</div>
                 </div>
             </div>

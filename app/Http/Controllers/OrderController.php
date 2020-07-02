@@ -179,6 +179,10 @@ class OrderController extends Controller
                 'numeric',
                 'min:0'
             ],
+            'overpay' => [
+                'numeric',
+                'min:0'
+            ],
             'discount_amount' => [
                 'numeric',
                 'min:0'
@@ -348,6 +352,10 @@ class OrderController extends Controller
                 'min:0'
             ],
             'discount_amount' => [
+                'numeric',
+                'min:0'
+            ],
+            'overpay' => [
                 'numeric',
                 'min:0'
             ],

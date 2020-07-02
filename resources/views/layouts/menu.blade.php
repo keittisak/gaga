@@ -31,7 +31,11 @@
               </div>
             </li>
             <li class="nav-item dropdown">
-              <a href="#" class="nav-link"><i class="fe fe-check-square"></i> รายงาน</a>
+              <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-check-square"></i> รายงาน</a>
+              <div class="dropdown-menu dropdown-menu-arrow">
+                <a href="{{ route('reports.daily-sales') }}" class="dropdown-item ">การขายประจำนวัน</a>
+                <a href="{{ route('reports.sales-by-product') }}" class="dropdown-item ">การขายตามสินค้า</a>
+              </div>
             </li>
             <li class="nav-item">
               <a href="#" class="nav-link"><i class="fe fe-file-text"></i> นำเข้า/ส่งออกข้อมูล</a>

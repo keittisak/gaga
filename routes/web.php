@@ -72,6 +72,12 @@ Route::post('/dashboard/data/sales-by-product', 'DashboardController@SalesByProd
 Route::post('/dashboard/data/order-by-status-total', 'DashboardController@orderByStatusTotal')->name('dashboard.data.order-by-status-total');
 Route::post('/dashboard/data/sale-by-channel', 'DashboardController@saleByChannel')->name('dashboard.data.sale-by-channel');
 
+//Report
+Route::get('/reports/daily-sales', 'ReportController@dailySales')->name('reports.daily-sales');
+Route::get('/reports/daily-sales/data', 'ReportController@dailySalesData')->name('reports.daily-sales.data');
+Route::get('/reports/sales-by-product', 'ReportController@salesByProduct')->name('reports.sales-by-product');
+Route::get('/reports/sales-by-product/data', 'ReportController@salesByProductData')->name('reports.sales-by-product.data');
+
 //Customer Portal
 Route::get('/customer-portal/{id}', 'CustomerPortalController@index')->name('customerportal.index');
 
