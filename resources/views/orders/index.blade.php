@@ -84,7 +84,7 @@
             <button data-toggle="dropdown" type="button" class="btn btn-primary dropdown-toggle btn-print" aria-expanded="true">พิมพ์</button>
             <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" x-placement="bottom-end" style="position: absolute; transform: translate3d(-56px, 32px, 0px); top: 0px; left: 0px; will-change: transform;">
                 <a class="dropdown-item btn-print-items" data-type="label"><span class="text-primary mr-3"><i class="fas fa-tag"></i></span>{{ __('ใบปะหน้ากล่อง 1') }}</a>
-                <a class="dropdown-item btn-print-items" data-type="label"><span class="text-primary mr-3"><i class="fas fa-tag"></i></span>{{ __('ใบปะหน้ากล่อง 2') }}</a>
+                <a class="dropdown-item btn-print-items" data-type="label-to-text"><span class="text-primary mr-3"><i class="fas fa-tag"></i></span>{{ __('ใบปะหน้ากล่อง 2') }}</a>
                 <a class="dropdown-item btn-print-items" data-type="list"><span class="text-info mr-3"><i class="far fa-list-alt"></i></span>{{ __('รายการแพ็คของ') }}</a>
             </div>
         </div>
@@ -133,7 +133,7 @@
                 <button data-toggle="dropdown" type="button" class="btn btn-outline-primary btn-block dropdown-toggle btn-print" aria-expanded="true">พิมพ์</button>
                 <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" x-placement="bottom-end" style="position: absolute; transform: translate3d(-56px, 32px, 0px); top: 0px; left: 0px; will-change: transform;">
                     <a class="dropdown-item btn-print-items" data-type="label"><span class="text-primary mr-3"><i class="fas fa-tag"></i></span>{{ __('ใบปะหน้ากล่อง 1') }}</a>
-                    <a class="dropdown-item btn-print-items" data-type="label"><span class="text-primary mr-3"><i class="fas fa-tag"></i></span>{{ __('ใบปะหน้ากล่อง 2') }}</a>
+                    <a class="dropdown-item btn-print-items" data-type="label-to-text"><span class="text-primary mr-3"><i class="fas fa-tag"></i></span>{{ __('ใบปะหน้ากล่อง 2') }}</a>
                     <a class="dropdown-item btn-print-items" data-type="list"><span class="text-info mr-3"><i class="far fa-list-alt"></i></span>{{ __('รายการแพ็คของ') }}</a>
                 </div>
             </div>
@@ -564,6 +564,8 @@
             if(orderIds.length === 0) return false;
             if(type == 'label'){
                 window.open("{!! route('orders.print.label') !!}"+"?"+jQuery.param({orderIds}), '_newtab');
+            }else if(type == 'label-to-text'){
+                window.open("{!! route('orders.print.label.to_text') !!}"+"?"+jQuery.param({orderIds}), '_newtab');
             }else{
                 window.open("{!! route('orders.print.list') !!}"+"?"+jQuery.param({orderIds}), '_newtab');
             }
