@@ -206,7 +206,7 @@ class ProductController extends Controller
                 $data['full_price'] = $request->full_price;
                 $data['cost'] = $request->cost;
                 $data['call_unit'] = $request->call_unit;
-                $data['full_name'] = $product->name.' '.$data['name'];
+                $data['full_name'] = $data['name'];
                 $_request->merge($data);
                 (new SkuController)->store($_request);
             }
@@ -366,7 +366,7 @@ class ProductController extends Controller
                 $data['full_price'] = $request->full_price;
                 $data['cost'] = $request->cost;
                 $data['call_unit'] = $request->call_unit;
-                $data['full_name'] = $product->name.' '.$data['name'];
+                $data['full_name'] = $data['name'];
                 $_request->merge($data);
                 (new SkuController)->update($_request, $request->sku_id);
                 $skus = $product->skus()->whereNotIn('id', [$request->sku_id])->get();
