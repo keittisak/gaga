@@ -234,13 +234,13 @@ class ProductController extends Controller
     public function edit($id)
     {
         $product = Product::with(['skus'])->findOrFail($id);
-        $variants = $product->variants()->with('options')->get();
+        // $variants = $product->variants()->with('options')->get();
         $data = [
             'action' => 'update',
             'title_en' => 'Update Product',
             'title_th' => 'แก้ไขสินค้า',
             'product' => $product,
-            'variants' => $variants
+            // 'variants' => $variants
         ];
         return view('products.form',$data);
     }
@@ -347,6 +347,7 @@ class ProductController extends Controller
                             $_request->merge(['updated_by' => $request->user()->id]);
                         }
                         $_request->merge($data);
+                        dd($_request->all());
                         $sku = (new SkuController)->update($_request, $data['id']);
                         $productSkuIds[] = $sku->id;
                     }
