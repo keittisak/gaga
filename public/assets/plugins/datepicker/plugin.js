@@ -1,6 +1,6 @@
 require.config({
     shim: {
-        'datepicker': ['language_th', 'jquery'],
+        // 'datepicker': ['jquery','language_th'],
     },
     paths: {
         'datepicker': 'assets/plugins/datepicker/bootstrap-datepicker',

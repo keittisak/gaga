@@ -232,4 +232,7 @@ return [
 
     ],
 
+    'css_version' => '1.2',
+    'js_version' => '1.2',
+
 ];
