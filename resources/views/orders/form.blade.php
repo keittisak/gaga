@@ -105,6 +105,8 @@
                                             <option value="{{$sku->id}}" {{ ($item->sku_id == $sku->id)? 'selected':'' }}>{{$sku->name.' - '.$sku->price}}</option>
                                         @endforeach
                                     </select>
+                                    @else
+                                    <input type="hidden" name="details[{{$key}}][sku_id]" value="{{ $item->sku_id }}">
                                     @endif
                                     </div>
                                 </div>
@@ -462,7 +464,7 @@
                     });
                 },
                 error: function (jqXHR, status, options, $form) {
-                    $('.btn-save').prop('disabled',true);
+                    $('.btn-save').prop('disabled',false);
                     loader.close();
                     if(jqXHR.status === 422){
                         Swal.fire({
