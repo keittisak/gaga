@@ -143,7 +143,7 @@
                                             <p>ส่วนลด</p>
                                         </div>
                                         <div class="col text-right">
-                                            <p>{{ number_format($order->discount_amlunt,2,'.',',') }}</p>
+                                            <p>{{ number_format($order->discount_amount,2,'.',',') }}</p>
                                         </div>
                                     </div>
                                     <div class="row">
