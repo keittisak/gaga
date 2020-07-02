@@ -38,6 +38,7 @@ class CreateProductsTable extends Migration
         Schema::create('skus', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->nullable();
+            $table->string('full_name')->nullable();
             $table->string('name_en')->nullable();
             $table->string('shortname')->nullable();
             $table->integer('product_id')->unsigned();
