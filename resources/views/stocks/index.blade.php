@@ -10,22 +10,19 @@
     </h1>
 </div>
 <div class="row prompt-front">
-    <div class="col-12 px-0 mb-3">
+    <div class="col-12 mb-3">
         <div class="row gutters-xs">
-            <div class="col-4">
+            <div class="col-6">
                 <input type="text" class="form-control text-search" placeholder="ค้นหา ...">
             </div>
             <span class="col-auto">
                 <button class="btn btn-secondary btn-search" type="button"><i class="fe fe-search"></i></button>
             </span>
-            <span class="col">
-                {{-- <a href="{{ route('products.create') }}" class="btn btn-primary float-right"><i class="fe fe-plus mr-2"></i> เพิ่มสินค้า</a> --}}
-            </span>
         </div>
     </div>
 </div>
 <div class="row prompt-front">
-    <div class="col-12 px-0">
+    <div class="col-12 ">
         <div class="card">
             <div class="table-responsive">
                 <table class="table card-table table-vcenter text-nowrap" id="table">

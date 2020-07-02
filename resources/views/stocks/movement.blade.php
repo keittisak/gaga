@@ -20,16 +20,16 @@
 <div class="row prompt-front">
     <div class="col-12  mb-3">
         <div class="row gutters-xs">
-            <div class="col-12 mb-4">
-                <button class="btn btn-secondary btn-express-date w-9" data-type="today">วันนี้</button>
-                <button class="btn btn-secondary btn-express-date w-9" data-type="yesterday">เมื่อวาน</button>
-                <button class="btn btn-secondary btn-express-date w-9" data-type="seven_day">7 วัน</button>
-                <button class="btn btn-secondary btn-express-date w-9" data-type="this_month">เดือนนี้</button>
-                <button class="btn btn-secondary btn-express-date w-9" data-type="last_mouth">เดือนที่แล้ว</button>
+            <div class="col-12">
+                <button class="btn btn-secondary btn-express-date w-9 mb-4" data-type="today">วันนี้</button>
+                <button class="btn btn-secondary btn-express-date w-9 mb-4" data-type="yesterday">เมื่อวาน</button>
+                <button class="btn btn-secondary btn-express-date w-9 mb-4" data-type="seven_day">7 วัน</button>
+                <button class="btn btn-secondary btn-express-date w-9 mb-4" data-type="this_month">เดือนนี้</button>
+                <button class="btn btn-secondary btn-express-date w-9 mb-4" data-type="last_mouth">เดือนที่แล้ว</button>
             </div>
         </div>
         <div class="row gutters-xs">
-            <div class="col-4">
+            <div class="col-12 col-md-5">
                 <div class="form-group">
                     <div class="input-group">
                         <span class="input-group-prepend" id="basic-addon1">
@@ -43,13 +43,11 @@
                     </div>
                 </div>
             </div>
-            <div class="col-4">
+            <div class="col-10 col-md-4">
                 <input type="text" class="form-control text-search" placeholder="ค้นหา ...">
             </div>
             <span class="col-auto">
-                <button class="btn btn-secondary btn-search" type="button"><i class="fe fe-search"></i></button>
-            </span>
-            <span class="col">
+                <button class="btn btn-primary btn-search" type="button"><i class="fe fe-search"></i></button>
             </span>
         </div>
     </div>
@@ -144,7 +142,7 @@
             }
             $('#start-date').val(startDate.format('DD/MM/YYYY'));
             $('#end-date').val(endDate.format('DD/MM/YYYY'));
-            $('.btn-search').click();
+            // $('.btn-search').click();
         })
 
 
