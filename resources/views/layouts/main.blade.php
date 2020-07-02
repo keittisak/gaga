@@ -44,6 +44,8 @@
     <script src="{{ asset('assets/plugins/datepicker/plugin.js') }}?v={{config('app.js_version')}}"></script>
     <!-- Moment -->
     <script src="{{ asset('assets/plugins/moment/plugin.js') }}?v={{config('app.js_version')}}"></script>
+    <!-- Clipboard -->
+    <script src="{{ asset('assets/plugins/clipboard/plugin.js') }}?v={{config('app.js_version')}}"></script>
     @yield('css')
 </head>
 <style>

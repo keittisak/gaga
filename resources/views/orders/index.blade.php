@@ -13,7 +13,7 @@
 @endsection
 @section('content')
 <div class="page-header">
-    <h1 class="page-title prompt-front">
+<h1 class="page-title prompt-front">
         {{$title_th}}
     </h1>
 </div>
@@ -222,7 +222,18 @@
     var $_status = 'draft';
     var $_paging = false;
     var $_showCheckbox = true;
-    require(['jquery', 'datatables','datepicker','sweetAlert','selectize','select2', 'moment'], function($, datatable, datepicker, Swal,selectize,select2, moment) {
+    require(['jquery', 'datatables','datepicker','sweetAlert','selectize','select2', 'moment','clipboard'], function($, datatable, datepicker, Swal,selectize,select2, moment,clipboard) {
+        $.fn.modal.Constructor.prototype._enforceFocus = function() {};
+        var clipboard = new clipboard('.clipboard');
+        clipboard.on('success', function(e) {
+            // console.info('Action:', e.action);
+            // console.info('Text:', e.text);
+            // console.info('Trigger:', e.trigger);
+            Swal.fire({
+                type: 'success',
+                title: 'คัดลอกลิ้งเรียบร้อย'
+            });
+        });
         $('.select2').select2();
         $('.selectize').selectize();
         $('.datepicker').datepicker({
@@ -412,6 +423,11 @@
                         $('.detail-slip-image').addClass('d-none');
                     }
                 }
+                $('.customer-portal-link').attr('data-clipboard-text',data.link);
+                $('.customer-portal-link').addClass('d-none');
+                if(data.link){
+                    $('.customer-portal-link').removeClass('d-none');
+                }
                 $('.detail-created-at').html(`${moment(data.created_at).format('DD/MM/YYYY H:mm')} ${(data.created_by)?data.created_by.name:""}`);
                 var urlEditOrder = "{{ route('orders.edit', '__id') }}";
                 urlEditOrder  = urlEditOrder.replace('__id',data.id);
@@ -424,6 +440,8 @@
                     type: 'error',
                     title: jqXHR.responseJSON.message
                 });
+            });
+            $(".modal").on("shown.bs.modal", function() {
             });
         })
 

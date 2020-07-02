@@ -9,6 +9,7 @@
         <div class="modal-body">
             <div class="row">
                 <div class="col-md-12">
+                    <p><strong>สำหรับลูกค้า:</strong> <button  type="button" class="btn btn-link btn-sm customer-portal-link clipboard" data-clipboard-text="xxx" data-clipboard-action="copy"><i class="far fa-copy"></i> คัดลอก</button></p>
                     <p><strong>ลูกค้า:</strong> <span id="customer-fullname">xxx</span></p>
                     <p><strong>ที่อยู่:</strong> <span id="customer-address">xxx</span></p>
                 </div>
@@ -50,7 +51,7 @@
                 <div class="col-md-12">
                     <p class="mt-2 detail-transfered-at"><strong>เวลาโอนเงิน: 2020-06-23 12:23</strong></p>
                     <p>
-                        <a href="https://f.ptcdn.info/649/058/000/pbx1ip7pkYZNFHqbg1B-o.jpg" target="_blank" class="btn btn-outline-primary btn-sm detail-slip-image"><i class="far fa-file-image"></i> หลักฐานการโอนเงิน</a>
+                        <a href="#" target="_blank" class="btn btn-outline-primary btn-sm detail-slip-image"><i class="far fa-file-image"></i> หลักฐานการโอนเงิน</a>
                     </p>
                     <p class="text-right text-muted detail-created-at">23/06/2020 12:12 Admin</p>
                 </div>

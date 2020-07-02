@@ -251,8 +251,10 @@ class OrderController extends Controller
             $code = $counter->generateCode('gg');
             $data['code'] = $code;
             $data['shipping_full_address'] = $data['shipping_address'].' '.$data['shipping_subdistrict_name'];
-
             $order = Order::create($data);
+            $order->update([
+                'link' => route('customerportal.index', base64_encode($order->id))
+            ]);
             if (isset($request->details)){
                 $discountAmount = $order->discount_amount;
 
@@ -419,7 +421,7 @@ class OrderController extends Controller
                 // $data['customer_id'] = $request->customer_id;
             }
             
-            $resultOrder = $order->update($data);
+            $order->update($data);
             $discountAmount = $data['discount_amount'];
             $totalQuantity = $data['total_quantity'];
             if (isset($request->details)){
