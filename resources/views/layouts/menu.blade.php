@@ -15,15 +15,15 @@
               <a href="{{ route('dashboard.index') }}" class="nav-link"><i class="fe fe-home"></i> หน้าแรก</a>
             </li>
             <li class="nav-item">
-              <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-file"></i> ออเดอร์</a>
+              <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-file"></i> ออเดอร์ <i class="fas fa-caret-down ml-2"></i></a>
               <div class="dropdown-menu dropdown-menu-arrow">
-                <a href="{{ route('orders.index') }}" class="dropdown-item ">จัดการออเดอร์</a>
+                <a href="{{ route('orders.index') }}" class="dropdown-item ">การจัดการออเดอร์</a>
                 <a href="{{ route('orders.create') }}" class="dropdown-item ">สร้างออเดอร์</a>
                 <a href="{{ route('orders.history') }}" class="dropdown-item ">ประวัติออเดอร์</a>
               </div>
             </li>
             <li class="nav-item dropdown">
-              <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-file"></i> จัดการสินค้า</a>
+              <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-file"></i> จัดการสินค้า <i class="fas fa-caret-down ml-2"></i></a>
               <div class="dropdown-menu dropdown-menu-arrow">
                 <a href="{{ route('products.index') }}" class="dropdown-item ">สินค้า</a>
                 <a href="{{ route('stocks.index') }}" class="dropdown-item ">คลังสินค้า</a>
@@ -31,7 +31,7 @@
               </div>
             </li>
             <li class="nav-item dropdown">
-              <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-check-square"></i> รายงาน</a>
+              <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-check-square"></i> รายงาน <i class="fas fa-caret-down ml-2"></i></a>
               <div class="dropdown-menu dropdown-menu-arrow">
                 <a href="{{ route('reports.daily-sales') }}" class="dropdown-item ">การขายประจำนวัน</a>
                 <a href="{{ route('reports.sales-by-product') }}" class="dropdown-item ">การขายตามสินค้า</a>
