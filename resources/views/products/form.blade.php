@@ -413,9 +413,17 @@
                 // $('button[type=submit]').prop('disabled',false);
                 loader.close();
                 if(jqXHR.status === 422){
+                    var errorMessage = ``;
+                        var i=0;
+                        $.map(jqXHR.responseJSON.errors,function(v,k){
+                            if (i === 1) { return; }
+                            errorMessage = v[0];
+                            i++;
+                        });
                     Swal.fire({
                         type: 'error',
-                        title: 'ระบุข้อมูลไม่ถูกต้อง'
+                        title: 'ข้อมูลไม่ถูกต้อง',
+                        text: errorMessage
                     });
                 }else{
                     Swal.fire({
