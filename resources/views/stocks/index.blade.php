@@ -220,16 +220,18 @@
             });
 
             $('.btn-action').on('click',function(e){
-                var id = $(this).data('id');
-                var sku_id = $(this).data('sku-id');
-                var type = $(this).data('type');
-                var available = $(this).data('available');
+                console.log()
+                var id = $(this).attr('data-id');
+                var sku_id = $(this).attr('data-sku-id');
+                var type = $(this).attr('data-type');
+                var available = $(this).attr('data-available');
                 var element = ``;
                 if(type == 'set'){
                     element = `${available} <i class="fas fa-angle-right"></i> <span class="tag tag-blue">${available}</span>`;
                 }else{
                     element = `${available} + 0 <i class="fas fa-angle-right"></i> <span class="tag tag-blue">${available}</span>`;
                 }
+                console.log(id);
                 $('#form-stock-update-title').text($(this).text());
                 $('#form-stock-update').find('input[name=id]').val(id);
                 $('#form-stock-update').find('input[name=sku_id]').val(sku_id);
