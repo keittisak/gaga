@@ -101,14 +101,14 @@
 </body>
 <script>
     require(['input-mask']);
-    require(['jquery'], function($) {
+    require(['jquery','datepicker'], function($,datepicker) {
         $(document).on('keypress keyup blur','.number-only',function(event){
             $(this).val($(this).val().replace(/\D/g, ""));
             if ((event.which < 48 || event.which > 57)) {
                 event.preventDefault();
             }
         });
-        
+            
         function pricceFormat(text) {
             return text.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
         }
@@ -120,42 +120,51 @@
                 }
                 reader.readAsDataURL(input.files[0]);
             }
-      }
-      pricceFormat = {
-        init: function(data){
-            return text.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
         }
-    }
-    loader = {
-        init: function(e){
-            let loading = `
-            <div class="loader loader-center"></div>
-            <div class="loader-page"></div>
-          `;
-          $('body').append(loading)
-        },
-        close: function(e){
-            $('.loader').remove();
-            $('.loader-page').remove();
+        pricceFormat = {
+            init: function(data){
+                return text.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+            }
         }
-      }
-
-    utilities = {
-        numberFormat:function(n,digit=2){
-            if (n === '') {
-                return '';
+        loader = {
+            init: function(e){
+                let loading = `
+                <div class="loader loader-center"></div>
+                <div class="loader-page"></div>
+            `;
+            $('body').append(loading)
+            },
+            close: function(e){
+                $('.loader').remove();
+                $('.loader-page').remove();
             }
-            else if (n == 0 || isNaN(n) || n == null || n == undefined) {
-                return (digit == undefined) ? '0' : parseFloat('0').toFixed(digit);
-            }
+        }
 
-            if (digit == undefined) {
-                return (parseFloat(n) + '').replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
-            }
-            return parseFloat(n).toFixed(digit).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
-        },
-    }
+        utilities = {
+            numberFormat:function(n,digit=2){
+                if (n === '') {
+                    return '';
+                }
+                else if (n == 0 || isNaN(n) || n == null || n == undefined) {
+                    return (digit == undefined) ? '0' : parseFloat('0').toFixed(digit);
+                }
 
+                if (digit == undefined) {
+                    return (parseFloat(n) + '').replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+                }
+                return parseFloat(n).toFixed(digit).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+            },
+        }
+
+            $.fn.datepicker.dates['th'] = {
+                days: ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์", "เสาร์", "อาทิตย์"],
+                daysShort: ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส", "อา"],
+                daysMin: ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส", "อา"],
+                months: ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"],
+                monthsShort: ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."],
+                today: "วันนี้"
+            };
+        
 
     });
       

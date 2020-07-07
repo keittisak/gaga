@@ -611,11 +611,10 @@
             var net_total_amount = (total_amount + shipping_fee) - discount_amount;
             $('input[name=net_total_amount]').val(net_total_amount);
         }
-
         $('#date_transfer').datepicker({
             autoclose:true,
             format:'dd/mm/yyyy',
-            // language:'th',
+            language:'th',
             setDate: new Date()
         });
 
