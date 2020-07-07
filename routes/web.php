@@ -11,19 +11,20 @@
 |
 */
 
-Route::get('/artisan/storage', function() {
-    $command = 'storage:link';
-    $result = \Artisan::call($command);
-    return \Artisan::output();
-});
-
 Route::get('/', function () {
     return view('welcome');
 });
+// Authentication Routes...
+Route::get('/login', 'Auth\LoginController@showLoginForm')->name('auth.login.from');
+Route::post('/login', 'Auth\LoginController@login')->name('auth.login');
+Route::post('/logout', 'Auth\LoginController@logout')->name('auth.logout');
 
-Route::get('/layouts', function () {
-    return view('layouts.app');
+Route::group(['prefix' =>'admin', 'middleware' => ['auth']], function () {
+    Route::get('/layouts', function () {
+        return view('layouts.app');
+    });
 });
+
 
 //Order
 Route::get('/orders', 'OrderController@index')->name('orders.index');
@@ -90,4 +91,10 @@ Route::get('/reset', function (){
 
 Route::get('/key-generate', function (){
     Artisan::call('key:generate');
+});
+
+Route::get('/artisan/storage', function() {
+    $command = 'storage:link';
+    $result = \Artisan::call($command);
+    return \Artisan::output();
 });

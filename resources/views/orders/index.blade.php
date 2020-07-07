@@ -288,7 +288,7 @@
                 { data: 'shipping_full_name', name: 'shipping_full_name' },
                 { data: 'net_total_amount', name: 'net_total_amount' },
                 { data: 'status', name: 'status' },
-                { data: 'payments', name: 'payments' },
+                { data: 'payments', name: 'payments', orderable: false  },
             ],
             order:[[1,"desc"]],
             paging:$_paging,
@@ -351,7 +351,10 @@
                 {
                     targets:7,
                     render: function (data, type, full, meta){
-                        return moment(data[0].transfered_at).format('DD/MM/YYYY H:mm');
+                        if(full.payments.length){
+                            return moment(full.payments[0].transfered_at).format('DD/MM/YYYY H:mm');
+                        }
+                        return "-";
                     }
                 },
             ],

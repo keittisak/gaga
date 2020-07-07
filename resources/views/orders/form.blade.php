@@ -62,15 +62,15 @@
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">ที่อยู่</label>
-                            <textarea class="form-control" name="shipping_address" id="shipping_address">{{ $order->shipping_address }}</textarea>
+                            <textarea class="form-control" name="shipping_address" id="shipping_address" rows="5">{{ $order->shipping_full_address }}</textarea>
                         </div>
-                        <div class="form-group">
+                        {{-- <div class="form-group">
                             <label for="" class="form-label">ตำบล / อำเภอ / จังหวัด / รหัสไปรษณีย์</label>
-                            {{-- <input type="hidden" readonly name="shipping_subdistrict_id" value=""> --}}
+                            <input type="hidden" readonly name="shipping_subdistrict_id" value="">
                             <input type="hidden" readonly name="shipping_subdistrict_name" value="">
                             <select name="shipping_subdistrict_id" id="shipping_subdistrict_id" class="form-control custom-select">
                             </select>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
                 
@@ -326,9 +326,9 @@
 <script>
     require(['jquery', 'selectize', 'datatables','jqueryForm', 'datepicker','sweetAlert','select2'], function ($, selectize, $datatable,form, datepicker,Swal,select2) {
         $('.select2').select2();
-        @if($order->shipping_subdistrict_id)
-            selectedSubdistrict({!! $order->shipping_subdistrict_id !!});
-        @endif
+        // @if($order->shipping_subdistrict_id)
+        //     selectedSubdistrict({!! $order->shipping_subdistrict_id !!});
+        // @endif
 
         function selectedSubdistrict(id=""){
             $.ajax({
@@ -383,12 +383,6 @@
             $('input[name=shipping_subdistrict_name]').val(e.params.data.text);
         });
 
-        $('#date_transfer').datepicker({
-            autoclose:true,
-            format:'dd/mm/yyyy',
-            // language:'th',
-            setDate: new Date()
-        });
         $('#btn-search-phone').on('click',function(e){
             var phone = $('input[name=shipping_phone').val();
             $.ajax({
@@ -404,8 +398,8 @@
                 if(data.id){
                     $('#customer_id').val(data.id);
                     $('#shipping_full_name').val(data.full_name);
-                    $('#shipping_address').val(data.address);
-                    selectedSubdistrict(data.subdistrict_id);
+                    $('#shipping_address').val(data.full_address);
+                    // selectedSubdistrict(data.subdistrict_id);
                     // var $select = $('#shipping_subdistrict').selectize();
                     // var selectize = $select[0].selectize;
                     // selectize.setValue(data.subdistrict_id);
@@ -452,7 +446,7 @@
                     loader.init();
                 },
                 success: function (res) {
-                    loader.close();
+                    // loader.close();
                     Swal.fire({
                         type: "success",
                         title: "บันทึกข้อมูลเรียบร้อย", 
@@ -617,6 +611,14 @@
             var net_total_amount = (total_amount + shipping_fee) - discount_amount;
             $('input[name=net_total_amount]').val(net_total_amount);
         }
+
+        $('#date_transfer').datepicker({
+            autoclose:true,
+            format:'dd/mm/yyyy',
+            // language:'th',
+            setDate: new Date()
+        });
+
     });
     
 </script>

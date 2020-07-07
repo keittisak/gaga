@@ -72,8 +72,9 @@
                             <h4 class="card-title">ออเดอร์</h4>
                             <div class="card-options">
                                 <div class="dropdown">
-                                    <button data-toggle="dropdown" type="button" class="btn btn-secondary dropdown-toggle btn-sm" aria-expanded="true"><span class="text-date">วันนี้</span> <span class="ml-2 text-muted"><i class="fas fa-caret-down"></i></span></button>
+                                    <button data-toggle="dropdown" type="button" class="btn btn-secondary dropdown-toggle btn-sm" aria-expanded="true"><span class="text-date">ทั้งหมด</span> <span class="ml-2 text-muted"><i class="fas fa-caret-down"></i></span></button>
                                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" x-placement="bottom-end" style="position: absolute; transform: translate3d(-56px, 32px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                        <a class="dropdown-item btn-print-items btn-express-date" data-type="all" data-card="order">ทั้งหมด</a>
                                         @foreach ($dates as $key => $date)
                                             <a class="dropdown-item btn-print-items btn-express-date" data-type="{{$key}}" data-card="order">{{$date}}</a>
                                         @endforeach
@@ -94,15 +95,15 @@
                                 @if($status != 'total')
                                     <tr>
                                         <td><span class="{{ $order['text_color'] }} mr-2"><i class="{{ $order['icon'] }}"></i></span> {{ $order['title'] }}</td>
-                                        <td class="text-right">{{ $order['quantity'] }}</td>
-                                        <td class="text-right">{{ $order['net_total_amount'] }}</td>
+                                        <td class="text-right">{{ number_format($order['quantity']) }}</td>
+                                        <td class="text-right">{{ number_format($order['net_total_amount'],2,'.',',') }}</td>
                                     </tr>
                                 @endif
                                 @endforeach
                                 <tr>
                                     <td>จำนวนทั้งหมด</td>
-                                    <td class="text-right">{{ $orderByStatusTotal['total']['quantity'] }}</td>
-                                    <td class="text-right">{{ $orderByStatusTotal['total']['net_total_amount'] }}</td>
+                                    <td class="text-right">{{ number_format($orderByStatusTotal['total']['quantity']) }}</td>
+                                    <td class="text-right">{{ number_format($orderByStatusTotal['total']['net_total_amount'],2,'.',',') }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -122,6 +123,7 @@
                                 <div class="dropdown">
                                     <button data-toggle="dropdown" type="button" class="btn btn-secondary dropdown-toggle btn-sm" aria-expanded="true"><span class="text-date">วันนี้</span> <span class="ml-2 text-muted"><i class="fas fa-caret-down"></i></span></button>
                                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" x-placement="bottom-end" style="position: absolute; transform: translate3d(-56px, 32px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                        <a class="dropdown-item btn-print-items btn-express-date" data-type="all" data-card="order">ทั้งหมด</a>
                                         @foreach ($dates as $key => $date)
                                             <a class="dropdown-item btn-print-items btn-express-date" data-type="{{$key}}" data-card="sale-by-product">{{$date}}</a>
                                         @endforeach
@@ -222,6 +224,13 @@
                 startDate = moment().subtract(7, 'days');
                 endDate = moment();
                 textDate = "7 วัน";
+            }else if(type =='all'){
+                textDate = "ทั้งหมด";
+            }
+            
+            if(startDate && endDate){
+                start_date = startDate.format('YYYY-MM-DD'),
+                end_date = endDate.format('YYYY-MM-DD')
             }
 
             if(card == 'order'){
@@ -241,8 +250,8 @@
                 dataType: "JSON",
                 data:{
                     _token: "{{ csrf_token() }}",
-                    start_date: startDate.format('YYYY-MM-DD'),
-                    end_date: endDate.format('YYYY-MM-DD')
+                    start_date: startDate,
+                    end_date: endDate
                 },
                 beforeSend: function( xhr ) {
                     $(button).closest('.card').find('.dimmer').addClass('active');

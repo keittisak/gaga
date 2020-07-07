@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -37,4 +39,35 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
+    public function showLoginForm()
+    {
+        echo 'xxzz';
+        // return view('auth.login');
+    }
+
+    public function username()
+    {
+        return 'username';
+    }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->only('username', 'password');
+
+        if (Auth::attempt($credentials)) {
+            // Authentication passed...
+            return redirect()->intended('/backoffice/dashboard');
+        }
+
+        return back()->withErrors(['username' => 'Username or password are wrong.']);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        return redirect('auth.login');
+    }
+
+
 }

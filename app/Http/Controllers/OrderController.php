@@ -54,13 +54,13 @@ class OrderController extends Controller
     public function data (Request $request)
     {
         $orders = Order::with(['payments'])
-                    ->whereHas('payments', function($q) use ($request){
-                        return $q->when(isset($request['transfered_at']),function($q) use ($request){
-                                    $request['transfered_at'] = str_replace('/','-',$request['transfered_at']);
-                                    $date = date('Y-m-d', strtotime($request['transfered_at']));
-                                return $q->where(DB::raw('DATE(transfered_at)'), $date);
-                        });
-                    })
+                    // ->when(isset($request['transfered_at']),function($q) use ($request){
+                    //     $q->whereHas('payments', function($q) use ($request){
+                    //         $request['transfered_at'] = str_replace('/','-',$request['transfered_at']);
+                    //         $date = date('Y-m-d', strtotime($request['transfered_at'])); 
+                    //         return $q->where(DB::raw('DATE(transfered_at)'), $date);
+                    //     });
+                    // })
                     ->when(isset($request['code']), function($q) use ($request){
                         return $q->where('code',strtolower($request['code']));
                     })
@@ -229,8 +229,9 @@ class OrderController extends Controller
                 $_request->merge([
                     'full_name' => $request->shipping_full_name,
                     'address' => $request->shipping_address,
-                    'full_address' => $request->shipping_address.' '.$request->shipping_subdistrict_name,
-                    'subdistrict_id' => $request->shipping_subdistrict_id,
+                    'full_address' => $request->shipping_address,
+                    // 'full_address' => $request->shipping_address.' '.$request->shipping_subdistrict_name,
+                    // 'subdistrict_id' => $request->shipping_subdistrict_id,
                     'phone' => $request->shipping_phone
                 ]);
                 $customer = (new CustomerController)->store($_request);
@@ -239,8 +240,9 @@ class OrderController extends Controller
                 $_request = new Request();
                 $_request->merge([
                     'full_name' => $request->shipping_full_name,
-                    'full_address' => $request->shipping_address.' '.$request->shipping_subdistrict_name,
-                    'subdistrict_id' => $request->shipping_subdistrict_id,
+                    'full_address' => $request->shipping_address,
+                    // 'full_address' => $request->shipping_address.' '.$request->shipping_subdistrict_name,
+                    // 'subdistrict_id' => $request->shipping_subdistrict_id,
                     'phone' => $request->shipping_phone
                 ]);
                 $customer = (new CustomerController)->update($_request, $request->customer_id);
@@ -250,7 +252,8 @@ class OrderController extends Controller
             $counter = new Counter();
             $code = $counter->generateCode('gg');
             $data['code'] = $code;
-            $data['shipping_full_address'] = $data['shipping_address'].' '.$data['shipping_subdistrict_name'];
+            $data['shipping_full_address'] = $data['shipping_address'];
+            // $data['shipping_full_address'] = $data['shipping_address'].' '.$data['shipping_subdistrict_name'];
             $order = Order::create($data);
             $order->update([
                 'link' => route('customerportal.index', base64_encode($order->id))
@@ -291,9 +294,12 @@ class OrderController extends Controller
                 $data['date'] = str_replace('/','-',$data['date']);
                 $transfer_at = date('Y-m-d H:i:s', strtotime($data['date'].' '.$data['time']));
                 $data['transfered_at'] = $transfer_at;
-                $_request->merge($data);
-                $payment = (new PaymentController)->store($_request);
-                $order->payments()->sync([$payment->id]);
+                if(!empty($data['date']) || !empty($data['image'])) {
+                    $_request->merge($data);
+                    $payment = (new PaymentController)->store($_request);
+                    $order->payments()->sync([$payment->id]);
+                }
+                
             }
             return $order;
         });
@@ -403,8 +409,9 @@ class OrderController extends Controller
                 $_request->merge([
                     'full_name' => $request->shipping_full_name,
                     'address' => $request->shipping_address,
-                    'full_address' => $request->shipping_address.' '.$request->shipping_subdistrict_name,
-                    'subdistrict_id' => $request->shipping_subdistrict_id,
+                    'full_address' => $request->shipping_address,
+                    // 'full_address' => $request->shipping_address.' '.$request->shipping_subdistrict_name,
+                    // 'subdistrict_id' => $request->shipping_subdistrict_id,
                     'phone' => $request->shipping_phone
                 ]);
                 $customer = (new CustomerController)->store($_request);
@@ -413,14 +420,16 @@ class OrderController extends Controller
                 $_request = new Request();
                 $_request->merge([
                     'full_name' => $request->shipping_full_name,
-                    'full_address' => $request->shipping_address.' '.$request->shipping_subdistrict_name,
-                    'subdistrict_id' => $request->shipping_subdistrict_id,
+                    'full_address' => $request->shipping_address,
+                    // 'full_address' => $request->shipping_address.' '.$request->shipping_subdistrict_name,
+                    // 'subdistrict_id' => $request->shipping_subdistrict_id,
                     'phone' => $request->shipping_phone
                 ]);
                 $customer = (new CustomerController)->update($_request, $request->customer_id);
                 // $data['customer_id'] = $request->customer_id;
             }
-            
+
+            $data['shipping_full_address'] = $data['shipping_address'];
             $order->update($data);
             $discountAmount = $data['discount_amount'];
             $totalQuantity = $data['total_quantity'];
@@ -476,11 +485,15 @@ class OrderController extends Controller
                 $_request->merge($data);
 
                 if(empty($data['id'])){
-                    $payment = (new PaymentController)->store($_request);
-                    $order->payments()->sync([$payment->id]);
-                    $order->payments()->detach($data['id']);
+                    if(!empty($data['date']) || !empty($data['image'])) {
+                        $payment = (new PaymentController)->store($_request);
+                        $order->payments()->sync([$payment->id]);
+                    }
                 }else{
-                    $payment = (new PaymentController)->update($_request, $data['id']);
+                    if(!empty($data['date']) || !empty($data['image'])) {
+                        $payment = (new PaymentController)->update($_request, $data['id']);
+                        $order->payments()->detach($data['id']);
+                    }
                 }
             }
             return $order;

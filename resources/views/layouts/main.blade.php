@@ -57,7 +57,7 @@
         height: 100%;
         background-color: rgb(255, 255, 255);
         opacity: 0.5;
-        z-index:99998;
+        z-index:1048;
     }
     .loader-center{
         position: fixed;
@@ -65,7 +65,7 @@
         top: 0;
         width: 100%;
         height: 100%;
-        z-index:99999;
+        z-index:1049;
         
     }
     .select2-container--default .select2-selection--single{

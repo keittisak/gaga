@@ -26,7 +26,7 @@ class DashboardController extends Controller
         ]);
         $salesByProduct = $this->SalesByProduct($_request);
         $overviewTotal = $this->overviewTotal($_request);
-        $orderByStatusTotal = $this->orderByStatusTotal($_request);
+        $orderByStatusTotal = $this->orderByStatusTotal(new Request);
         $saleChannel = $this->saleByChannel($_request);
         $data = [
             'title_eng' => 'Dashboard',
