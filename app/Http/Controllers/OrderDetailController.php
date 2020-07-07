@@ -61,8 +61,8 @@ class OrderDetailController extends Controller
                 'min:0'
             ],
             'cost' => [
-                'numeric',
-                'min:0'
+                // 'numeric',
+                // 'min:0'
             ],
             'quantity' => [
                 'required',
@@ -148,8 +148,8 @@ class OrderDetailController extends Controller
                 'min:0'
             ],
             'cost' => [
-                'numeric',
-                'min:0'
+                // 'numeric',
+                // 'min:0'
             ],
             'type' => [
                 'in:simple,variable,group'
