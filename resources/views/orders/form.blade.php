@@ -2,6 +2,46 @@
 @section('title',$title_en)
 @section('css')
     {{--  Css  --}}
+    <style>
+        .drop-zone{
+            border: 3px dashed #9aa0ac;
+            cursor: pointer;
+        }
+        .drop-zone--over {
+            /* border-style: solid; */
+            border-color: #467fcf;
+        }
+        .drop-zone__thumb {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #cccccc;
+            background-size: cover;
+            position: relative;
+        }
+
+        .drop-zone__thumb::after {
+            /* content: attr(data-label);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 5px 0;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.75);
+            font-size: 14px;
+            text-align: center; */
+        }
+        .drop-zone__prompt{
+            margin: 0 auto;
+            position: absolute;
+            top: 35%;
+            left: 0;
+            right:0;
+            z-index: 1;
+        }
+    </style>
 @endsection
 @section('content')
 <div class="page-header">
@@ -266,9 +306,24 @@
                         </div> --}}
                         <div class="form-group">
                             <label for="" class="form-label">สลิปการโอน</label>
-                            <button type="button" class="btn btn-secondary d-block" id="btn-image-transfer"><i class="far fa-file-image"></i> เลือกไฟล์</button>
                             <input type="file" name="image_transfer" id="image_transfer" class="form-control" style="display:none" accept="image/png, image/jpeg">
-                            <img src="{{ (isset($order->payments[0]))?$order->payments[0]->image:'#' }}" class="rounded mt-3 w-75" id="image-transfer-preview" {{ (!isset($order->payments[0]))?'style=display:none':'' }}>
+                            <div class="row row-cards">
+                                <div class="col-12 col-sm-6">
+                                    <div class="card drop-zone" id="drop-zone">
+                                        <div class="card-body p-3 text-center drop-zone__body" style="min-height: 210px">
+                                            <div class="drop-zone__prompt text-muted">
+                                                <span class="h1 m-0"><i class="fas fa-cloud-upload-alt"></i></span>
+                                                <div class="h5 m-0 font-weight-normal">Drag and Drop File Upload</div>
+                                            </div>
+                                            @if(isset($order->payments[0]))
+                                            <div class="drop-zone__thumb">
+                                                <img src="{{$order->payments[0]->image}}" alt="">
+                                            </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -419,20 +474,6 @@
                     title: jqXHR.responseJSON.message
                 });
             });
-        });
-        $('#btn-image-transfer').on('click',function(e){
-            $('#image_transfer').click();
-        });
-        $('#image_transfer').change(function(e){
-            var input = this;
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#image-transfer-preview').attr('src', e.target.result);
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-            $('#image-transfer-preview').show();
         });
         var bntSave = 'save';
         $('.btn-save').on('click',function(e){
@@ -625,6 +666,89 @@
             language:'th',
             setDate: new Date()
         });
+
+        $('#image_transfer').change(function(e){
+            var input = this;
+            if (input.files.length && input.files[0]) {
+                updateThumbnail($('.drop-zone'), input.files[0]);
+            }else{
+                console.log(111)
+                $('.drop-zone').find('.drop-zone__thumb').remove();
+                $('.drop-zone').find('.drop-zone__prompt').show();
+            }
+        });
+
+        var dropZoneElement = $('.drop-zone')
+        $('.drop-zone').on("click", (e) => {
+            e.preventDefault(); 
+            $('#image_transfer').click();
+        });
+        $('.drop-zone').on('dragover', (e)=> {
+            e.preventDefault();
+            dropZoneElement.addClass('drop-zone--over');
+        });
+        $('.drop-zone').hover(function(){
+            let thumbnailElement = $('.drop-zone').find(".drop-zone__thumb");
+            if (thumbnailElement.length) {
+                $('.drop-zone').find('.drop-zone__prompt').removeClass('text-muted').show();
+                thumbnailElement.css('opacity',0.2);
+            }
+            dropZoneElement.addClass('drop-zone--over');
+        },function(){
+            let thumbnailElement = $('.drop-zone').find(".drop-zone__thumb");
+            if (thumbnailElement.length) {
+                $('.drop-zone').find('.drop-zone__prompt').addClass('text-muted').hide();
+                thumbnailElement.css('opacity',1);
+            }
+            dropZoneElement.removeClass("drop-zone--over");
+        });
+        ["dragleave", "dragend"].forEach((type) => {
+            dropZoneElement.on(type, (e) => {
+                dropZoneElement.removeClass("drop-zone--over");
+            });
+        });
+
+        dropZoneElement.on("drop", (e) => {
+            var inputElement = $('#image_transfer');
+            e.preventDefault();
+            if (e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.files.length) {
+                inputElement.files = e.originalEvent.dataTransfer.files;
+               
+                updateThumbnail(dropZoneElement, e.originalEvent.dataTransfer.files[0]);
+            }
+
+            dropZoneElement.removeClass("drop-zone--over");
+        });
+
+        function updateThumbnail(dropZoneElement, file) {
+            let thumbnailElement = dropZoneElement.find(".drop-zone__thumb");
+
+            // First time - remove the prompt
+            if (dropZoneElement.find(".drop-zone__prompt")) {
+                dropZoneElement.find(".drop-zone__prompt").hide();
+            }
+
+            // First time - there is no thumbnail element, so lets create it
+            if (!thumbnailElement.length) {
+                dropZoneElement.find('.card-body').append(`<div class="drop-zone__thumb"></div>`);
+            }else{
+                thumbnailElement.find('img').remove();
+            }
+
+            // thumbnailElement.dataset.label = file.name;
+
+            // Show thumbnail for image files
+            if (file.type.startsWith("image/")) {
+                const reader = new FileReader();
+
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    $('.drop-zone__thumb').append(`<img src="${reader.result}">`)
+                };
+            } else {
+                $('.drop-zone__thumb').append(``);
+            }
+        }
 
     });
     
