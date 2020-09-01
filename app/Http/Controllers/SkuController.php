@@ -54,7 +54,8 @@ class SkuController extends Controller
                 'min:0'
             ],
             'cost' => [
-                // 'numeric',
+                'null',
+                'numeric',
                 // 'min:0'
             ],
             'option_ids.*' => [
@@ -135,8 +136,9 @@ class SkuController extends Controller
                 'min:0'
             ],
             'cost' => [
+                'null',
                 'numeric',
-                'min:0'
+                // 'min:0'
             ],
             'option_ids.*' => [
                 'exists:options,id'

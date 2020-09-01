@@ -9,6 +9,12 @@
         .select2-selection__rendered{
             text-align: center;
         }
+        .overview-card{
+            cursor: pointer;
+        }
+        .corsor-pointer{
+            cursor: pointer;
+        }
     </style>
 @endsection
 @section('content')
@@ -17,10 +23,10 @@
         {{$title_th}}
     </h1>
 </div>
-<div class="row row-cards prompt-front">
+<div class="row row-cards prompt-front" id="overview">
     @foreach ($statusInfo as $status => $item)
         <div class="col-6 col-sm-4 col-lg-2">
-            <div class="card">
+            <div class="card overview-card" data-status="{{$status}}" id="overview-card-{{$status}}">
                 <div class="card-body p-3 text-center">
                     @if($status == 'draft')
                     <div class="text-right text-blue">
@@ -76,16 +82,16 @@
             <button data-toggle="dropdown" type="button" class="btn btn-primary dropdown-toggle btn-change-status" aria-expanded="true">เปลี่ยนสถานะ</button>
             <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" x-placement="bottom-end" style="position: absolute; transform: translate3d(-56px, 32px, 0px); top: 0px; left: 0px; will-change: transform;">
                 @foreach ($statusInfo as $status => $item)
-                <a class="dropdown-item btn-change-status-items" data-status="{{$status}}"><span class="{{$item['text_color']}} mr-3"><i class="{{$item['icon']}}"></i></span>{{$item['title']}}</a>
+                <a class="dropdown-item btn-change-status-items corsor-pointer" data-status="{{$status}}"><span class="{{$item['text_color']}} mr-3"><i class="{{$item['icon']}}"></i></span>{{$item['title']}}</a>
                 @endforeach
             </div>
         </div>
         <div class="dropdown">
             <button data-toggle="dropdown" type="button" class="btn btn-primary dropdown-toggle btn-print" aria-expanded="true">พิมพ์</button>
             <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" x-placement="bottom-end" style="position: absolute; transform: translate3d(-56px, 32px, 0px); top: 0px; left: 0px; will-change: transform;">
-                <a class="dropdown-item btn-print-items" data-type="label"><span class="text-primary mr-3"><i class="fas fa-tag"></i></span>{{ __('ใบปะหน้ากล่อง 1') }}</a>
-                <a class="dropdown-item btn-print-items" data-type="label-to-text"><span class="text-primary mr-3"><i class="fas fa-tag"></i></span>{{ __('ใบปะหน้ากล่อง 2') }}</a>
-                <a class="dropdown-item btn-print-items" data-type="list"><span class="text-info mr-3"><i class="far fa-list-alt"></i></span>{{ __('รายการแพ็คของ') }}</a>
+                <a class="dropdown-item btn-print-items corsor-pointer" data-type="label"><span class="text-primary mr-3"><i class="fas fa-tag"></i></span>{{ __('ใบปะหน้ากล่อง 1') }}</a>
+                <a class="dropdown-item btn-print-items corsor-pointer" data-type="label-to-text"><span class="text-primary mr-3"><i class="fas fa-tag"></i></span>{{ __('ใบปะหน้ากล่อง 2') }}</a>
+                <a class="dropdown-item btn-print-items corsor-pointer" data-type="list"><span class="text-info mr-3"><i class="far fa-list-alt"></i></span>{{ __('รายการแพ็คของ') }}</a>
             </div>
         </div>
     </div>
@@ -105,10 +111,10 @@
                 <div class="input-group mb-3">
                     <input type="text" class="form-control text-search" placeholder="ค้นหา ...">
                     <span class="input-group-append">
-                        <button class="btn btn-primary pl-3 pr-3 btn-search" type="button"><i class="fe fe-search"></i></button>
+                        <button class="btn btn-secondary pl-3 pr-3 btn-search" type="button"><i class="fe fe-search"></i></button>
                     </span>
                     <span class="input-group-append">
-                        <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#advancedSearchModal">ค้นหาขั้นสูง</button>
+                        <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#advancedSearchModal">ค้นหาขั้นสูง</button>
                     </span>
                 </div>
             </div>
@@ -119,7 +125,7 @@
     <div class="row d-md-none mb-5 prompt-front">
         <div class="col-6">
             <div class="dropdown w-100">
-                <button data-toggle="dropdown" type="button" class="btn btn-outline-primary btn-block dropdown-toggle btn-change-status" aria-expanded="true">เปลี่ยนสถานะ</button>
+                <button data-toggle="dropdown" type="button" class="btn btn-primary btn-block dropdown-toggle btn-change-status" aria-expanded="true">เปลี่ยนสถานะ</button>
                 <div class="dropdown-menu dropdown-menu-left dropdown-menu-arrow" x-placement="bottom-end" style="position: absolute; transform: translate3d(-56px, 32px, 0px); top: 0px; left: 0px; will-change: transform;">
                     @foreach ($statusInfo as $status => $item)
                     <a class="dropdown-item btn-change-status-items" data-status="{{$status}}"><span class="{{$item['text_color']}} mr-3"><i class="{{$item['icon']}}"></i></span>{{$item['title']}}</a>
@@ -130,7 +136,7 @@
         </div>
         <div class="col-6 ">
             <div class="dropdown w-100">
-                <button data-toggle="dropdown" type="button" class="btn btn-outline-primary btn-block dropdown-toggle btn-print" aria-expanded="true">พิมพ์</button>
+                <button data-toggle="dropdown" type="button" class="btn btn-primary btn-block dropdown-toggle btn-print" aria-expanded="true">พิมพ์</button>
                 <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" x-placement="bottom-end" style="position: absolute; transform: translate3d(-56px, 32px, 0px); top: 0px; left: 0px; will-change: transform;">
                     <a class="dropdown-item btn-print-items" data-type="label"><span class="text-primary mr-3"><i class="fas fa-tag"></i></span>{{ __('ใบปะหน้ากล่อง 1') }}</a>
                     <a class="dropdown-item btn-print-items" data-type="label-to-text"><span class="text-primary mr-3"><i class="fas fa-tag"></i></span>{{ __('ใบปะหน้ากล่อง 2') }}</a>
@@ -360,6 +366,9 @@
             ],
             initComplete: function(){
                 // $('.dataTables_filter').remove();
+                $('.card-status').remove();
+                $('#overview-card-'+$_status).append(`<div class="card-status bg-blue"></div>`);
+                console.log($_status);
             },
             drawCallback: function (settings) {
                 if (!$dt.parent().hasClass("table-responsive")) {
@@ -388,7 +397,10 @@
             // tableSetting.columnDefs[0].visible = $_showCheckbox;
             tableSetting.columnDefs[0].bVisible = $_showCheckbox;
             table = $dt.DataTable(tableSetting);
-
+        });
+        $('.overview-card').on('click',function(e){
+            $_status = $(this).data('status');
+            $('.status').val($_status).change();
         });
 
         $(document).on('click', '.show-details', function(e){

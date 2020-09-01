@@ -32,7 +32,7 @@ class CreateOrdersTable extends Migration
             $table->integer('shipping_subdistrict_id')->unsigned()->nullable();
             $table->string('shipping_postalcode', 5)->nullable();
             $table->string('shipping_phone', 30)->nullable();
-            $table->enum('status',['draft', 'unpaid', 'transfered', 'paid', 'shipped', 'voided']);
+            $table->enum('status',['draft', 'unpaid', 'transfered', 'packing', 'paid', 'shipped', 'voided']);
             $table->enum('sale_channel',['line', 'facebook', 'instagram', 'other']);
             $table->integer('payment_method_id')->nullable();
             $table->integer('shipment_method_id')->nullable();
