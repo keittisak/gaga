@@ -46,16 +46,15 @@ class SkuController extends Controller
                 'nullable'
             ],
             'full_price' => [
-                'numeric',
-                'min:0'
+                // 'numeric',
+                // 'min:0'
             ],
             'price' => [
                 'numeric',
                 'min:0'
             ],
             'cost' => [
-                'null',
-                'numeric',
+                // 'numeric',
                 // 'min:0'
             ],
             'option_ids.*' => [
@@ -128,16 +127,15 @@ class SkuController extends Controller
                 'nullable'
             ],
             'full_price' => [
-                'numeric',
-                'min:0'
+                // 'numeric',
+                // 'min:0'
             ],
             'price' => [
                 'numeric',
                 'min:0'
             ],
             'cost' => [
-                'null',
-                'numeric',
+                // 'numeric',
                 // 'min:0'
             ],
             'option_ids.*' => [

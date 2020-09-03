@@ -113,18 +113,18 @@
                             <div class="col-4">
                                 <input type="text" class="form-control" id="set-all-variable-price" placeholder="ราคาสินค้า">
                             </div>
-                            <div class="col-4">
+                            {{-- <div class="col-4">
                                 <input type="text" class="form-control" id="set-all-variable-full_price" placeholder="ราคาเต็ม">
+                            </div> --}}
+                            <div class="col-4">
+                                <input type="text" class="form-control" id="set-all-variable-call_unit"  placeholder="น้ำหนัก (กก.)">
                             </div>
                             <div class="col-4">
                                 <input type="text" class="form-control" id="set-all-variable-cost"  placeholder="ต้นทุน">
                             </div>
                         </div>
                         <div class="row gutters-xs mt-2">
-                            <div class="col-4">
-                                <input type="text" class="form-control" id="set-all-variable-call_unit"  placeholder="น้ำหนัก (กก.)">
-                            </div>
-                            <div class="col-8">
+                            <div class="col-12 col-md-6">
                                 <button type="button" class="btn btn-primary btn-block" id="set-all-variable">ปรับปรุงแบบสินค้าทั้งหมด</button>
                             </div>
                         </div>
@@ -139,7 +139,7 @@
                                         <th class="w-25"><small>ชื่อแบบสินค้า</small></th>
                                         {{-- <th><small>รหัสสินค้า</small></th> --}}
                                         <th><small>ราคา</small></th>
-                                        <th><small>ราเต็ม</small></th>
+                                        {{-- <th><small>ราเต็ม</small></th> --}}
                                         <th><small>ต้นทุน</small></th>
                                         <th class="w-1"><small>น้ำหนัก (กก.)</small></th>
                                         <th></th>
@@ -162,9 +162,9 @@
                                             <td>
                                                 <input type="text" class="form-control variable-price" name="skus[{{$key}}][price]" value="{{$item->price}}">
                                             </td>
-                                            <td>
+                                            {{-- <td>
                                                 <input type="text" class="form-control variable-full_price" name="skus[{{$key}}][full_price]" value="{{$item->full_price}}">
-                                            </td>
+                                            </td> --}}
                                             <td>
                                                 <input type="text" class="form-control variable-cost" name="skus[{{$key}}][cost]" value="{{$item->cost}}">
                                             </td>
@@ -198,12 +198,12 @@
                             <input type="text" class="form-control" name="price" value="{{isset($product->skus[0])?$product->skus[0]->price:''}}">
                         </div>
                     </div>
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         <label class="form-label">ราคาเต็ม <span class="form-required">*</span></label>
                         <div class="col-md-4 col-12 pl-0">
                             <input type="text" class="form-control" name="full_price" value="{{isset($product->skus[0])?$product->skus[0]->full_price:''}}">
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="form-group">
                         <label class="form-label">ต้นทุน <span class="form-required">*</span></label>
                         <div class="col-md-4 col-12 pl-0">
@@ -261,6 +261,7 @@
         });
         $('#btn-clear-variant').on('click',function(e){
             $('#table-product-skus').find('tbody').html('');
+            $('.product-variable-optoin-input').html('');
             $('#type').prop('checked',false).change();
         });
 
@@ -328,9 +329,7 @@
                                         <td>
                                             <input type="text" class="form-control variable-price" name="skus[${i}][price]">
                                         </td>
-                                        <td>
-                                            <input type="text" class="form-control variable-full_price" name="skus[${i}][full_price]">
-                                        </td>
+                       
                                         <td>
                                             <input type="text" class="form-control variable-cost" name="skus[${i}][cost]">
                                         </td>
@@ -375,9 +374,7 @@
                                         <td>
                                             <input type="text" class="form-control variable-price" name="skus[${i}][price]">
                                         </td>
-                                        <td>
-                                            <input type="text" class="form-control variable-full_price" name="skus[${i}][full_price]">
-                                        </td>
+                                
                                         <td>
                                             <input type="text" class="form-control variable-cost" name="skus[${i}][cost]">
                                         </td>
