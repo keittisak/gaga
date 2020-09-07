@@ -7,6 +7,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
 {
@@ -42,8 +43,7 @@ class LoginController extends Controller
 
     public function showLoginForm()
     {
-        echo 'xxzz';
-        // return view('auth.login');
+        return view('auth.login');
     }
 
     public function username()
@@ -53,11 +53,26 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        $validate = [
+            'username' => [
+                'required',
+            ],
+            'password' => [
+                'required'
+            ]
+        ];
+        $validator = Validator::make($request->all(), $validate);
+        if ($validator->fails()) {
+            return redirect()
+                        ->back()
+                        ->withErrors($validator)
+                        ->withInput();
+        }
         $credentials = $request->only('username', 'password');
 
         if (Auth::attempt($credentials)) {
             // Authentication passed...
-            return redirect()->intended('/backoffice/dashboard');
+            return redirect()->intended('/admin/dashboard');
         }
 
         return back()->withErrors(['username' => 'Username or password are wrong.']);
@@ -66,7 +81,7 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-        return redirect('auth.login');
+        return redirect()->route('auth.login.from');
     }
 
 
