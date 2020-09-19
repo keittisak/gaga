@@ -156,7 +156,21 @@
             $('#start-date').val(startDate.format('DD/MM/YYYY'));
             $('#end-date').val(endDate.format('DD/MM/YYYY'));
             // $('.btn-search').click();
-        })
+        });
+
+        $('#start-date').datepicker({
+            autoclose:true,
+            format:'dd/mm/yyyy',
+            language:'th',
+            setDate: new Date()
+        });
+
+        $('#end-date').datepicker({
+            autoclose:true,
+            format:'dd/mm/yyyy',
+            language:'th',
+            setDate: new Date()
+        });
 
 
     });
