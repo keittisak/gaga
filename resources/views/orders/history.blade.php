@@ -218,7 +218,10 @@
                 {
                     targets:7,
                     render: function (data, type, full, meta){
-                        return moment(data[0].transfered_at).format('DD/MM/YYYY H:mm');
+                        if(data[0] != undefined){
+                            return moment(data[0].transfered_at).format('DD/MM/YYYY H:mm');
+                        }
+                        return '';
                     }
                 },
             ],
