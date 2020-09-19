@@ -37,9 +37,9 @@
                 <a href="{{ route('reports.sales-by-product') }}" class="dropdown-item ">การขายตามสินค้า</a>
               </div>
             </li>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
               <a href="#" class="nav-link"><i class="fe fe-file-text"></i> นำเข้า/ส่งออกข้อมูล</a>
-            </li>
+            </li> --}}
           </ul>
         </div>
       </div>
