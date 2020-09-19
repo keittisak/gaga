@@ -156,7 +156,7 @@
                         </td>
                         <td><a href="invoice.html" class="text-inherit">OD200217000{{$i}}</a></td>
                         <td><i class="fe fe-calendar"></i> 17-02-2020</td>
-                        <td><span class="h1 text-orange"><i class="fab fa-line"></i></span></td>
+                        <td><span class="h1 text-green"><i class="fab fa-line"></i></span></td>
                         <td>
                             สมหมาย ป้องกันภัย
                         </td>
