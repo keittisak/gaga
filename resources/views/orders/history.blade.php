@@ -181,7 +181,7 @@
                     render: function (data, type, full, meta){
                         var icon = ``;
                         if(data == 'line'){
-                            icon = `<span class="h1 text-orange"><i class="fab fa-line"></i></span>`;
+                            icon = `<span class="h1 text-green"><i class="fab fa-line"></i></span>`;
                         }else if(data == 'facebook'){
                             icon = `<span class="h1 text-blue"><i class="fab fa-facebook-square"></i></span>`;
                         }else if(data == 'instagram'){

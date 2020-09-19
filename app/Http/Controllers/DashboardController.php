@@ -138,7 +138,7 @@ class DashboardController extends Controller
     public function saleByChannel (Request $request)
     {
         $saleChannel = [
-            'line' => ['icon' => 'fab fa-line', 'text_color' => 'text-orange', 'quantity' => 0, 'net_total_amount' =>0, 'per' => 0],
+            'line' => ['icon' => 'fab fa-line', 'text_color' => 'text-green', 'quantity' => 0, 'net_total_amount' =>0, 'per' => 0],
             'facebook' => ['icon' => 'fab fa-facebook-square', 'text_color' => 'text-blue', 'quantity' => 0, 'net_total_amount' =>0, 'per' => 0],
             'instagram' => ['icon' => 'fab fa-instagram-square', 'text_color' => 'text-muten', 'quantity' => 0, 'net_total_amount' =>0, 'per' => 0],
             'other' => ['icon' => 'fas fa-ellipsis-h', 'text_color' => 'text-muten', 'quantity' => 0, 'net_total_amount' =>0, 'per' => 0],

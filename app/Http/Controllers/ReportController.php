@@ -48,7 +48,7 @@ class ReportController extends Controller
             $end_date = Carbon::createFromFormat('d/m/Y',$request->end_date)->format('Y-m-d');
             return $q->whereBetween(DB::raw('DATE(created_at)'), [$start_date, $end_date]);
         })
-        ->groupBy('created_at')
+        ->groupBy(DB::raw('DATE(created_at)'))
         ->orderBy('created_at', 'asc')
         ->get();
         return DataTables::of($result)->make(true);
@@ -85,7 +85,7 @@ class ReportController extends Controller
             $end_date = Carbon::createFromFormat('d/m/Y',$request->end_date)->format('Y-m-d');
             return $q->whereBetween(DB::raw('DATE(created_at)'), [$start_date, $end_date]);
         })
-        ->groupBy('created_at')
+        ->groupBy(DB::raw('DATE(created_at)'))
         ->orderBy('created_at', 'asc')
         ->get();
         $orderIds = $orders->toArray();
