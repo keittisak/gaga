@@ -118,7 +118,6 @@ class OrderController extends Controller
         ];
         foreach($orders as $order)
         {
-            dd($order);
             $result[$order->status] += $order->quantity;
             $result['total'] += $order->quantity;
         }
