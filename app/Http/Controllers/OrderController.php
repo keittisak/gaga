@@ -116,6 +116,7 @@ class OrderController extends Controller
             'voided' => 0,
             'total' => 0
         ];
+        dd($orders);
         foreach($orders as $order)
         {
             dd($order->status);
