@@ -170,7 +170,10 @@
                 {
                     targets:2,
                     render: function (data, type, full, meta){
-                        return moment(data).format('DD/MM/YYYY H:mm');
+                        if(data){
+                            return moment(data).format('DD/MM/YYYY H:mm');
+                        }
+                        return '';
                     }
                 },
                 {
