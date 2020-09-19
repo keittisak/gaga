@@ -116,10 +116,9 @@ class OrderController extends Controller
             'voided' => 0,
             'total' => 0
         ];
-        dd($orders);
         foreach($orders as $order)
         {
-            dd($order->status);
+            dd($order);
             $result[$order->status] += $order->quantity;
             $result['total'] += $order->quantity;
         }
