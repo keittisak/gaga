@@ -186,7 +186,7 @@
         <div class="page">
             <div class="subpage">
                 <div class="masonry-with-columns">
-                    @for($i=0;$i<2;$i++)
+
                     @foreach($orders as $order)
                     <div class="item">
                         <p class="mb-10"><span class="title">{!! strtoupper($order->code) !!}</span></p>
@@ -215,7 +215,7 @@
                         </div>
                     </div>
                     @endforeach
-                    @endfor
+
                 {{-- @php
                 $counter ++;
                 @endphp
