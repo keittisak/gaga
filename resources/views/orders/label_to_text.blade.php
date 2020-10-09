@@ -176,6 +176,10 @@
           table,td{
             border: 1px solid #adb5bd;
           }
+          .display-block {
+              display:block;
+              margin-bottom: 6px;
+          }
 
     </style>
 </head>
@@ -194,17 +198,19 @@
                     @php
                         // $text .= strtoupper($order->code) ."</br>";
                         $text .= "ผู้ส่ง</br>";
-                        $text .= "GG-GAGA</br></br>";
+                        $text .= "GG-GAGA<span class='display-block'></span>";
                         $text .= "ผู้รับ</br>";
                         $text .= "$order->shipping_full_name ($order->shipping_phone)</br>";
-                        $text .= "$order->shipping_full_address</br></br>";
+                        $text .= "$order->shipping_full_address<span class='display-block'></span>";
                     @endphp
                     @foreach ($order->details as $item)
                         @php
-                            $text .= "$item->full_name.' = '.$item->quantity</br>";
+                            $text .= "$item->full_name = $item->quantity</br>";
                         @endphp
                     @endforeach
-                    <hr>
+                    @php
+                        $text .= "<br><br>"
+                    @endphp
                     {{-- <div class="item" style="display:none">
                         <p class="mb-10"><span class="title">{!! strtoupper($order->code) !!}</span></p>
                         <div class="mb-10">
