@@ -193,11 +193,11 @@
                     @foreach($orders as $order)
                     @php
                         $text .= strtoupper($order->code) ."</br>";
+                        $text .= "ผู้ส่ง</br>";
+                        $text .= "GG-GAGA</br>";
                         $text .= "ผู้รับ</br>";
                         $text .= "$order->shipping_full_name ($order->shipping_phone)</br>";
                         $text .= "$order->shipping_full_address</br>";
-                        $text .= "ผู้ส่ง</br>";
-                        $text .= "ตัวเล็ก SHOP (099-999-9999)</br>";
                     @endphp
                     <div class="item" style="display:none">
                         <p class="mb-10"><span class="title">{!! strtoupper($order->code) !!}</span></p>
@@ -222,15 +222,6 @@
                                 </tr>
                                 @endforeach
                             </table>
-                        </div>
-                        @php
-                            $text .= "หมายเหตุ</br>";
-                            $text .= ($order->remark)?$order->remark:'#'.'</br>';
-                            $text .= "</br></br>"
-                        @endphp
-                        <div class="mb-10">
-                            <p class="title">หมายเหตุ</p>
-                            <p>{{ ($order->remark)?$order->remark:'-' }}</p>
                         </div>
                     </div>
                     @endforeach

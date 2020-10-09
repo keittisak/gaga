@@ -191,13 +191,13 @@
                     <div class="item">
                         <p class="mb-10"><span class="title">{!! strtoupper($order->code) !!}</span></p>
                         <div class="mb-10">
+                            <p class="title">ผู้ส่ง</p>
+                            <p>GG-GAGA</p>
+                        </div>
+                        <div class="mb-10">
                             <p class="title">ผู้รับ</p>
                             <p>{!! $order->shipping_full_name.' ('.$order->shipping_phone.')' !!}</p>
                             <p>{!! $order->shipping_full_address !!}</p>
-                        </div>
-                        <div class="mb-10">
-                            <p class="title">ผู้ส่ง</p>
-                            <p>ตัวเล็ก SHOP (099-999-9999)</p>
                         </div>
                         <div>
                             <table>
