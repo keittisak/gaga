@@ -192,14 +192,20 @@
                     @endphp
                     @foreach($orders as $order)
                     @php
-                        $text .= strtoupper($order->code) ."</br>";
+                        // $text .= strtoupper($order->code) ."</br>";
                         $text .= "ผู้ส่ง</br>";
-                        $text .= "GG-GAGA</br>";
+                        $text .= "GG-GAGA</br></br>";
                         $text .= "ผู้รับ</br>";
                         $text .= "$order->shipping_full_name ($order->shipping_phone)</br>";
-                        $text .= "$order->shipping_full_address</br>";
+                        $text .= "$order->shipping_full_address</br></br>";
                     @endphp
-                    <div class="item" style="display:none">
+                    @foreach ($order->details as $item)
+                        @php
+                            $text .= "$item->full_name.' = '.$item->quantity</br>";
+                        @endphp
+                    @endforeach
+                    <hr>
+                    {{-- <div class="item" style="display:none">
                         <p class="mb-10"><span class="title">{!! strtoupper($order->code) !!}</span></p>
                         <div class="mb-10">
                             <p class="title">ผู้รับ</p>
@@ -223,7 +229,7 @@
                                 @endforeach
                             </table>
                         </div>
-                    </div>
+                    </div> --}}
                     @endforeach
                 <div>
                     <button type="button" onclick="copy_data(shipping_text)" style="margin-top:20px"><i class="far fa-copy"></i> คัดลอกข้อความ</button>
